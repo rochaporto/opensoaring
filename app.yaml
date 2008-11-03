@@ -1,9 +1,0 @@
-application: opensoaring
-version: 1
-runtime: python
-api_version: 1
-
-handlers:
-- url: /.*
-  script: opensoaring/appengine/main.py
-
