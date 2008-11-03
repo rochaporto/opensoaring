@@ -18,7 +18,7 @@ public class OpenSoaring implements EntryPoint {
    * This is the entry point method.
    */
   public void onModuleLoad() {
-    Image img = new Image("http://code.google.com/webtoolkit/logo-185x175.png");
+    Image img = new Image("opensoaringlogo.png");
     Button button = new Button("Click me");
     
     // We can add style names
@@ -37,7 +37,7 @@ public class OpenSoaring implements EntryPoint {
 
     // Create the dialog box
     final DialogBox dialogBox = new DialogBox();
-    dialogBox.setText("Welcome to GWT!");
+    dialogBox.setText("Welcome to GWT mine!");
     dialogBox.setAnimationEnabled(true);
     Button closeButton = new Button("close");
     VerticalPanel dialogVPanel = new VerticalPanel();
