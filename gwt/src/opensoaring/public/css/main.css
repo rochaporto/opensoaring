@@ -1,0 +1,89 @@
+body {
+	width: 100%;
+}
+
+.mainPanel {
+	width: 96%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.headerPanel {
+	background: #eeeeee;
+	height: 60px;
+	width: 100%;
+}
+
+.navPanel {
+	background: transparent url(../images/navbar_bg.png) repeat scroll 0 0;
+	clear: both;
+	float: left;
+	width: 100%;
+}
+
+.navButton-up, .navButton-down, .navButton-up-hovering, .navButton-down-hovering {
+	border-right: 1px solid #5599dd;
+	color: #FFFFFF;
+	cursor: pointer;
+	font-weight: bold;
+	padding: 5px 10px;
+	text-align: center;
+	width: 70px;
+}
+
+.navButton-up {
+	background: transparent url(../images/navbar_bg.png) repeat scroll 0 0;
+}
+
+.navButton-down-hovering, .navButton-up-hovering {
+	background: transparent url(../images/navbar_bg3.png) repeat scroll 0 0;
+}
+
+.navButton-down {
+	background: transparent url(../images/navbar_bg2.png) repeat scroll 0 0;
+}
+
+.contentPanel {
+	width: 100%;
+	clear: both;
+	float: left;
+}
+
+.appPanel {
+	width: 100%;
+	clear: both;
+	float: left;
+}
+
+.appHeaderPanel {
+	width: 100%;
+	clean: both;
+	float: left;
+	background: #EAF3FD none repeat scroll 0 0;
+	padding: 2px 2px 10px 15px;
+}
+
+.appHeaderTitle {
+	font-size: 1.2em;
+	font-family: sans-serif;
+	font-weight: bold;
+	margin: 10px 0px 5px 0px;
+}
+
+.gwt-TabPanel {
+	background: #EAF3FD none repeat scroll 0 0;
+	width: 100%;
+	padding: 0px;
+	margin: 0px;
+}
+
+.gwt-TabPanelBottom {
+	background: white;
+	border: 0px;
+	border-top: solid 1px #C6DFF9;
+}
+
+.gwt-TabBarItem {
+	background: #ffffff none repeat scroll 0 0;
+	width: 100px;
+}
