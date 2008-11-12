@@ -1,13 +1,29 @@
+/*
+ * This file is part of OpenSoaring.
+ *
+ * OpenSoaring is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenSoaring is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenSoaring.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package opensoaring.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.Timer;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -22,6 +38,8 @@ public class OpenSoaring extends Composite implements EntryPoint, ClickListener 
 	
 	public void onModuleLoad() {
 
+		OpenSoarMessages openSoarMessages = GWT.create(OpenSoarMessages.class);
+		
 		// Header Panel
 		headerPanel.setStyleName("openSoar-headerPanel");
 		
@@ -31,10 +49,13 @@ public class OpenSoaring extends Composite implements EntryPoint, ClickListener 
 		navPanel.setStyleName("openSoar-navPanel");
 		
 		// Content Panel + Adding Applications
-		this.addApplication("Home", new OpenSoarApp("Home"));
-		this.addApplication("Schedule", new OpenSoarSchedule("Schedule"));
-		this.addApplication("Flight Info", new OpenSoarApp("Flight Info"));
-		this.setSelectedApp(0);
+		addApplication(openSoarMessages.scheduleAppName(), 	
+				new OpenSoarSchedule(openSoarMessages.scheduleAppName()));
+		addApplication(openSoarMessages.homeAppName(), 
+				new OpenSoarApp(openSoarMessages.homeAppName()));
+		addApplication(openSoarMessages.flightInfoAppName(), 
+				new OpenSoarApp(openSoarMessages.flightInfoAppName()));
+		setSelectedApp(0);
 		contentPanel.setStyleName("openSoar-contentPanel");
 		
 		// Main Panel
@@ -50,27 +71,27 @@ public class OpenSoaring extends Composite implements EntryPoint, ClickListener 
 		ToggleButton appButton = new ToggleButton(name);
 		appButton.addClickListener(this);
 		appButton.setStylePrimaryName("openSoar-navButton");
-		this.navItemsPanel.add(appButton);
-		this.contentPanel.add(w);
+		navItemsPanel.add(appButton);
+		contentPanel.add(w);
 	}
 	
 	public void setSelectedApp(int index) {
-		for (int i=0; i<this.navItemsPanel.getWidgetCount(); i++) {
+		for (int i = 0; i < navItemsPanel.getWidgetCount(); i++) {
 			if (i == index) {
-				((ToggleButton)this.navItemsPanel.getWidget(i)).setDown(true);
+				((ToggleButton)navItemsPanel.getWidget(i)).setDown(true);
 			} else {
-				((ToggleButton)this.navItemsPanel.getWidget(i)).setDown(false);
+				((ToggleButton)navItemsPanel.getWidget(i)).setDown(false);
 			}
 		}
-		this.contentPanel.showWidget(index);
+		contentPanel.showWidget(index);
 	}
 	
 	public void onClick(Widget sender) {
 		ToggleButton appButton = (ToggleButton)sender;
-		for (int i=0; i < this.navItemsPanel.getWidgetCount(); i++) {
-			ToggleButton tmpButton = (ToggleButton)this.navItemsPanel.getWidget(i);
+		for (int i = 0; i < navItemsPanel.getWidgetCount(); i++) {
+			ToggleButton tmpButton = (ToggleButton)navItemsPanel.getWidget(i);
 			if (tmpButton.equals(appButton)) {				
-				this.setSelectedApp(i);
+				setSelectedApp(i);
 			}
 		}
 	}

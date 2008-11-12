@@ -1,0 +1,46 @@
+/* ---- ---- ---- ---- ---- ---- ----
+ * -- OpenSoaring Schedule Application
+ * ---- ---- ---- ---- ---- ---- ---- */
+ .openSoarSched-navPanel {
+	background: #EAF3FD none repeat scroll 0 0; 
+	border-bottom: solid 1px #C6DFF9;
+	margin: 0px;
+	padding-right: 20px;
+	width: 100%;
+}
+
+.openSoarSched-navButton-up, .openSoarSched-navButton-down, 
+.openSoarSched-navButton-up-hovering, .openSoarSched-navButton-down-hovering {
+	font-size: 1.0em;
+	padding: 3px 8px 3px 8px;
+	text-align: center;
+	width: 60px;
+}
+
+.openSoarSched-navButton-up, .openSoarSched-navButton-up-hovering {
+	color: #0066cc;
+	text-decoration: underline;
+}
+
+.openSoarSched-navButton-down, .openSoarSched-navButton-down-hovering {
+	background: #ffffff none repeat scroll 0 0;
+	border: solid 1px #C6DFF9;
+	border-bottom: none;
+	font-weight: bold;
+	margin-bottom: -1px;	
+}
+
+.openSoarSched-navButton-down-hovering, .openSoarSched-navButton-up-hovering {
+	cursor: pointer;
+}
+
+.openSoarSched-contentPanel {
+	background: white;
+	border: 0px;
+	width: 100%;
+}
+
+.openSoarSched-mainPanel {
+	width: 100%;
+}
+
