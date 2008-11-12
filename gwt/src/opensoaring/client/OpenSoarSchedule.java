@@ -1,16 +1,16 @@
 package opensoaring.client;
 
-import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
-public class ScheduleApp extends Composite {
+public class OpenSoarSchedule extends OpenSoarApp implements ClickListener {
 	
-	private VerticalPanel mainPanel = new VerticalPanel();
-	private HorizontalPanel headerPanel = new HorizontalPanel();
 	private VerticalPanel timedSchedPanel = new VerticalPanel();
 	private HorizontalPanel timedSchedNavPanel = new HorizontalPanel();
 	private DeckPanel timedSchedContentPanel = new DeckPanel();
@@ -19,16 +19,13 @@ public class ScheduleApp extends Composite {
 	private ToggleButton weekNavButton = new ToggleButton("Week");
 	private ToggleButton monthNavButton = new ToggleButton("Month");
 	
-	public ScheduleApp(String caption) {
+	private Button infoButton = new Button("Info Msg");
+	private Button errorButton = new Button("Error Msg");
 	
-		// App Header Panel
-		HTML appHeaderTitle = new HTML(caption);
-		appHeaderTitle.setStyleName("appHeaderTitle");
-		headerPanel.add(appHeaderTitle);
-		headerPanel.setStyleName("appHeaderPanel");
-		mainPanel.add(headerPanel);
+	public OpenSoarSchedule(String caption) {
+		super(caption);
 		
-		// App Navigation Panel
+		// Build the Schedule application panel
 		HorizontalPanel navItemsPanel = new HorizontalPanel();
 		fourDaysNavButton.setStylePrimaryName("navSchedButton");
 		weekNavButton.setStylePrimaryName("navSchedButton");
@@ -39,22 +36,28 @@ public class ScheduleApp extends Composite {
 		timedSchedNavPanel.add(navItemsPanel);
 		timedSchedNavPanel.setStyleName("navSchedPanel");		
 		timedSchedPanel.add(timedSchedNavPanel);		
-		
-		// App Content Panel(s)
-		timedSchedContentPanel.add(new HTML("Text"));
+
+		FlowPanel fp = new FlowPanel();
+		infoButton.addClickListener(this);
+		fp.add(infoButton);
+		errorButton.addClickListener(this);
+		fp.add(errorButton);
+		timedSchedContentPanel.add(fp);
 		timedSchedContentPanel.showWidget(0);
 		fourDaysNavButton.setDown(true);
 		timedSchedContentPanel.setStyleName("contentSchedPanel");
 		timedSchedPanel.add(timedSchedContentPanel);
 		
-		// App Panel
-		timedSchedPanel.setStyleName("schedPanel");
-		mainPanel.add(timedSchedPanel);
-		
-		// Finish up the composite
-		initWidget(mainPanel);
-		
-		setStyleName("appPanel");
+		// Add it to the app's content panel
+		this.setContentPanel(timedSchedPanel);
+	}
+	
+	public void onClick(Widget sender) {
+		if (sender == this.infoButton) {
+			info("You clicked the info msg button");
+		} else if(sender == this.errorButton) {
+			error("You clicked the error msg button");
+		}
 	}
 	
 }

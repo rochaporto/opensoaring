@@ -1,80 +1,18 @@
+/* ---- ---- ---- ---- ---- ---- ----
+ * -- HTML tags direct customization 
+ * ---- ---- ---- ---- ---- ---- ---- */
 body {
 	width: 100%;
 }
 
-.mainPanel {
-	width: 96%;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-.headerPanel {
-	background: #eeeeee;
-	height: 60px;
-	width: 100%;
-}
-
-.navPanel {
-	background: transparent url(../images/navbar_bg.png) repeat scroll 0 0;
-	clear: both;
-	float: left;
-	width: 100%;
-}
-
-.navButton-up, .navButton-down, .navButton-up-hovering, .navButton-down-hovering {
-	border-right: 1px solid #5599dd;
-	color: #FFFFFF;
-	cursor: pointer;
-	font-weight: bold;
-	padding: 5px 10px;
-	text-align: center;
-	width: 70px;
-}
-
-.navButton-up {
-	background: transparent url(../images/navbar_bg.png) repeat scroll 0 0;
-}
-
-.navButton-down-hovering, .navButton-up-hovering {
-	background: transparent url(../images/navbar_bg3.png) repeat scroll 0 0;
-}
-
-.navButton-down {
-	background: transparent url(../images/navbar_bg2.png) repeat scroll 0 0;
-}
-
-.contentPanel {
-	width: 100%;
-	clear: both;
-	float: left;
-}
-
-.appPanel {
-	width: 100%;
-	clear: both;
-	float: left;
-}
-
-.appHeaderPanel {
-	width: 100%;
-	clean: both;
-	float: left;
-	background: #EAF3FD none repeat scroll 0 0;
-	padding: 2px 2px 10px 15px;
-}
-
-.appHeaderTitle {
-	font-size: 1.2em;
-	font-family: sans-serif;
-	font-weight: bold;
-	margin: 10px 0px 5px 0px;
-}
-
+/* ---- ---- ---- ---- ---- ---- ----
+ * -- GWT Widgets customization 
+ * ---- ---- ---- ---- ---- ---- ---- */
 .gwt-TabPanel {
 	background: #EAF3FD none repeat scroll 0 0;
-	width: 100%;
-	padding: 0px;
 	margin: 0px;
+	padding: 0px;
+	width: 100%;	
 }
 
 .gwt-TabPanelBottom {
@@ -86,4 +24,99 @@ body {
 .gwt-TabBarItem {
 	background: #ffffff none repeat scroll 0 0;
 	width: 100px;
+}
+
+/* ---- ---- ---- ---- ---- ---- ----
+ * -- OpenSoaring Main Application Container - Entry Point
+ * ---- ---- ---- ---- ---- ---- ---- */
+.openSoar-mainPanel {
+	margin-left: auto;
+	margin-right: auto;
+	width: 96%;
+}
+
+.openSoar-headerPanel {
+	height: 60px;
+	width: 100%;
+}
+
+.openSoar-navPanel {
+	background: transparent url(../images/navbar_bg.png) repeat scroll 0 0;
+	clear: both;
+	float: left;
+	width: 100%;
+}
+
+.openSoar-navButton-up, .openSoar-navButton-down, .openSoar-navButton-up-hovering, 
+  .openSoar-navButton-down-hovering {
+	border-right: 1px solid #5599dd;
+	color: #FFFFFF;
+	cursor: pointer;
+	font-weight: bold;
+	padding: 5px 10px;
+	text-align: center;
+	width: 70px;
+}
+
+.openSoar-navButton-up {
+	background: transparent url(../images/navbar_bg.png) repeat scroll 0 0;
+}
+
+.openSoar-navButton-down-hovering, .openSoar-navButton-up-hovering {
+	background: transparent url(../images/navbar_bg3.png) repeat scroll 0 0;
+}
+
+.openSoar-navButton-down {
+	background: transparent url(../images/navbar_bg2.png) repeat scroll 0 0;
+}
+
+.openSoar-contentPanel {
+	clear: both;
+	float: left;
+	width: 100%;
+}
+
+/* ---- ---- ---- ---- ---- ---- ----
+ * -- OpenSoaring Application - Inside the OpenSoaring container
+ * ---- ---- ---- ---- ---- ---- ---- */
+.openSoarApp-mainPanel {
+	clear: both;
+	float: left;
+	width: 100%;
+}
+
+.openSoarApp-headerPanel {
+	background: #EAF3FD none repeat scroll 0 0;
+	clean: both;
+	float: left;
+	padding: 12px 2px 10px 15px;
+	width: 100%;
+}
+
+.openSoarApp-appTitlePanel {
+	float: left;
+	font-family: sans-serif;
+	font-size: 1.2em;
+	font-weight: bold;
+	height: 26px;
+	width: 100%;
+}
+
+.openSoarApp-infoMsgPanel {
+	float: right;
+	margin-right: 20px;
+	text-align: center;
+}
+
+.openSoarApp-infoMsg {
+	font-family: sans-serif;
+	padding: 1px 10px 1px 10px;
+	width: 400px;
+}
+
+.openSoarApp-infoMsgERROR {
+	background: #ffe87e;
+}
+.openSoarApp-infoMsgINFO {
+	background: #d0e4f6;
 }
