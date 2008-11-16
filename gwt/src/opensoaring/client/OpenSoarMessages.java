@@ -28,12 +28,16 @@ public interface OpenSoarMessages extends Messages {
 	
 	String homeAppName();
 	
+	String loading();
+	
+	String loadFailed();
+	
 	String schedule4Days();
 	
 	String scheduleWeek();
 	
 	String scheduleMonth();
-
+	
 	String infoTest(String buttonName);
 	
 }

@@ -19,7 +19,6 @@
 
       <!-- Other module inherits                                      -->
 
-
       <!-- Specify the app entry point class.                         -->
       <entry-point class='opensoaring.client.OpenSoaring'/>
     
@@ -27,4 +26,6 @@
       <stylesheet src='css/main.css' />
       <stylesheet src='css/schedule.css' />
 	
+	  <source path="client"/>
+	  <source path="json"/>
 </module>

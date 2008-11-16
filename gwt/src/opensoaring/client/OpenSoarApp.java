@@ -94,11 +94,16 @@ public class OpenSoarApp extends Composite {
 	}
 	
 	public void info(String msg) {
-		putMessage(OpenSoarApp.msgLevel.INFO, msg);
+		info(msg, 3);
 	}
-	
+	public void info(String msg, int duration) {
+		putMessage(OpenSoarApp.msgLevel.INFO, msg, duration);
+	}
 	public void error(String msg) {
-		putMessage(OpenSoarApp.msgLevel.ERROR, msg);
+		error(msg, 3);
+	}
+	public void error(String msg, int duration) {
+		putMessage(OpenSoarApp.msgLevel.ERROR, msg, duration);
 	}
 	
 	protected void setContentPanel(Widget w) {
