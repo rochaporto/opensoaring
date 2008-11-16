@@ -11,7 +11,7 @@
 
 .openSoarSched-navButton-up, .openSoarSched-navButton-down, 
 .openSoarSched-navButton-up-hovering, .openSoarSched-navButton-down-hovering {
-	font-size: 1.0em;
+	font-size: 13px;
 	padding: 3px 8px 3px 8px;
 	text-align: center;
 	width: 60px;
@@ -44,3 +44,48 @@
 	width: 100%;
 }
 
+.openSoarSched-schedTable {
+	background: #f2f6fb;
+	border-bottom: solid 1px #e8eef7;
+	border-top: solid 1px #e8eef7;
+	width: 100%;
+}
+
+.openSoarSched-schedDay {
+	border: solid 4px yellow;
+}
+
+.openSoarSched-schedHeader {
+	background: #c3d9ff;
+	color: #112abb;
+	font-size: 11px;
+	padding: 2px 0px 2px 0px;
+	text-align: center;
+	width: 100%;
+}
+
+.openSoarSched-schedHeader-today {
+	background: #88aacc;
+	color: white;
+}
+
+.openSoarSched-schedEntry {
+	background: white;
+	color: #577595;
+	font-size: 11px;
+	padding: 2px 0px 2px 0px;
+	text-align: center;
+	width: 100%;
+}
+.openSoarSched-schedEntry-INSTRUCTOR {
+	background: #dc9595;
+}
+.openSoarSched-schedEntry-WINCHER {
+	background: #63dba7;
+}
+.openSoarSched-schedEntry-TRIALPILOT {
+	background: #eeeeee;
+}
+.openSoarSched-schedEntry-STUDENT {
+
+}

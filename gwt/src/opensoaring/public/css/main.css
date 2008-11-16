@@ -30,9 +30,9 @@ body {
  * -- OpenSoaring Main Application Container - Entry Point
  * ---- ---- ---- ---- ---- ---- ---- */
 .openSoar-mainPanel {
-	margin-left: auto;
-	margin-right: auto;
+	margin: auto auto auto auto;
 	width: 96%;
+	
 }
 
 .openSoar-headerPanel {
@@ -53,7 +53,7 @@ body {
 	color: #FFFFFF;
 	cursor: pointer;
 	font-weight: bold;
-	padding: 5px 10px;
+	padding: 3px 10px;
 	text-align: center;
 	width: 70px;
 }
@@ -96,7 +96,7 @@ body {
 .openSoarApp-appTitlePanel {
 	float: left;
 	font-family: sans-serif;
-	font-size: 1.2em;
+	font-size: 15px;
 	font-weight: bold;
 	height: 26px;
 	width: 100%;
@@ -115,7 +115,6 @@ body {
 }
 
 .openSoarApp-infoMsg {
-	font-family: sans-serif;
 	padding: 1px 10px 1px 10px;
 	width: 400px;
 }
