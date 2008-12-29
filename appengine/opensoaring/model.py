@@ -1,14 +1,18 @@
 from google.appengine.ext import db
 
-class Glider(db.Model):
-    imat = db.StringProperty()
-    model = db.StringProperty()
-    finesse = db.IntegerProperty()
-
 class Member(db.Model):
     user = db.UserProperty()
+    email = db.StringProperty(required=True)
+    firstName = db.StringProperty(required=True)
+    lastName = db.StringProperty(required=True)
 
-class Presence(db.Model):
-    date = db.DateTimeProperty()
-    member = db.ReferenceProperty(Member)
-    roles = db.StringListProperty()
+class Glider(db.Model):
+    model = db.StringProperty()
+    registration = db.StringProperty()
+    picture = db.LinkProperty()
+    
+class ScheduleEntry(db.Model):
+    date = db.DateProperty(required=True)
+    member = db.ReferenceProperty(Member, required=True)
+    period = db.IntegerProperty(required=True)
+    role = db.StringProperty()    
