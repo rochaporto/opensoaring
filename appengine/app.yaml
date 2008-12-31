@@ -5,4 +5,4 @@ api_version: 1
 
 handlers:
 - url: /.*
-  script: opensoaring/appengine.py
+  script: opensoaring/webapp.py
