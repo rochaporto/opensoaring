@@ -1,3 +1,21 @@
+"""
+Copyright (C) 2008 OpenSoaring <contact@opensoaring.info>.
+
+This file is part of OpenSoaring.
+
+OpenSoaring is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+OpenSoaring is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with OpenSoaring.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import cgi
 import logging
 
@@ -11,18 +29,21 @@ from opensoaring.model import Glider, Member
 class MemberHandler(webapp.RequestHandler):
 
     def get(self):
-        dsMembers = Member.all()
-        members = []
-        for member in dsMembers:
-            members.append({"email": member.email,
-                            "firstName": member.firstName, "lastName": member.lastName})                            
-        self.response.out.write(simplejson.dumps(members))
+        email = cgi.escape(self.request.get("email"))
+        members = Member.all()
+        members.filter("email =", email)
+        members.order("lastName")
+        jsonMembers = []
+        for member in members:
+            jsonMembers.append({"email": member.email, "firstName": member.firstName, 
+                                "lastName": member.lastName})                            
+        self.response.out.write(simplejson.dumps(jsonMembers))
         
     def post(self):
         email = self.request.get("email")
         firstName = self.request.get("firstName")
         lastName = self.request.get("lastName")
-        newMember = Member(email=email, firstName=firstName, lastName=lastName)
+        newMember = Member(key_name=email, email=email, firstName=firstName, lastName=lastName)
         newMember.put()
 
     def delete(self):
@@ -33,7 +54,6 @@ class MemberHandler(webapp.RequestHandler):
 class GliderHandler(webapp.RequestHandler):
 
     def get(self):
-        user = users.get_current_user()
         model = cgi.escape(self.request.get("model"))
         registration = cgi.escape(self.request.get("registration"))
         gliders = Glider.all()
