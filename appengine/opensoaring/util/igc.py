@@ -104,25 +104,64 @@ class IGCParser(object):
         for ext in self.extensionsExtData.keys():
             point[ext] = line[self.extensionsExtData[ext][0]-1:self.extensionsExtData[ext][1]]
         self.extensions.append(point)
-    
+        
     def toKML(self):
-        kml = "<kml xmlns='http://earth.google.com/kml/2.2'><Document>"
-        pMarks = self.task["TNS"]
-        for pnt in ["TKF", "STA", "FIN", "LDG"]:
-            pMarks.append(self.task[pnt])
-        for pnt in pMarks:
+        kml = """
+            <kml xmlns='http://earth.google.com/kml/2.2'>
+                <Document>
+                    <Style id="task">
+                        <LineStyle>
+                            <width>1.5</width>
+                            <color>ff0000ff</color>
+                        </LineStyle>
+                    </Style>
+                    <Style id="path">
+                        <LineStyle>
+                            <width>0.5</width>
+                            <color>ffff0000</color>
+                        </LineStyle>
+                    </Style>
+              """
+        pMarks = [("TAKEOFF", self.task["TKF"]), ("START", self.task["STA"])]
+        for i, tns in enumerate(self.task["TNS"]):
+            pMarks.append(("TP%d" % (i+1), tns))
+        pMarks.extend([("FINISH", self.task["FIN"]), ("LANDING", self.task["LDG"])])
+        taskPath = """
+            <Placemark>
+                <styleUrl>#task</styleUrl>
+                <LineString>
+                    <coordinates>"""
+        for name, pnt in pMarks:
             if pnt[0] != "0000000N" and pnt[1] != "00000000E":
                 kml += """
                     <Placemark>
-                        <name>%s</name><description></description>
+                        <name>%s: %s</name><description></description>
                         <Point><coordinates>%s,%s</coordinates></Point>
                     </Placemark>
-                    """ % (pnt[2], self._dms2Decimal(pnt[0]), self._dms2Decimal(pnt[1]))
-        kml += "<Placemark><LineString><altitudeMode>absolute</altitudeMode><coordinates>"
+                    """ % (name, pnt[2], self._dms2Decimal(pnt[1]), self._dms2Decimal(pnt[0]))
+                
+                taskPath += "%s,%s " % (self._dms2Decimal(pnt[1]), self._dms2Decimal(pnt[0]))
+        kml += """
+                    %s</coordinates>
+                </LineString>
+            </Placemark>
+            """ % taskPath
+        
+        kml += """
+                    <Placemark>
+                        <styleUrl>#path</styleUrl>
+                        <LineString>
+                            <altitudeMode>absolute</altitudeMode>
+                            <coordinates>"""
         for pnt in self.fixes:
-            kml += "%s,%s,100 " % (self._dms2Decimal(pnt["LAT"]), self._dms2Decimal(pnt["LON"])) 
-        kml += "</coordinates></LineString></Placemark>"
-        kml += "</Document></kml>"
+            kml += "%s,%s,%s " % (self._dms2Decimal(pnt["LON"]), self._dms2Decimal(pnt["LAT"]),
+                                  pnt["GALT"]) 
+        kml += """
+                            </coordinates>
+                        </LineString>
+                    </Placemark>
+              </Document>
+            </kml>"""
         return kml
         
     def _parseTime(self, str):
@@ -132,36 +171,26 @@ class IGCParser(object):
             return datetime.strptime(str, "%d%m%y %H%M%S")
     
     def _dms2Decimal(self, coord):
-        dms = float(int(coord[-6:-4]) * 60 + int(coord[-4:-1])) / 3600
         if len(coord) == 8: # latitude
-            dms += float(coord[0:2])
-            if coord[-1] == "S":
-                dms = -dms
-        else:
-            dms += float(coord[0:3])
-            if coord[-1] == "W":
-                dms = -dms  
+            deg, min = (float(coord[-8:-6]), float(coord[-6:-4]) + (float(coord[-4:-1])/1000))
+        else: # longitude
+            deg, min = (float(coord[-9:-6]), float(coord[-6:-4]) + (float(coord[-4:-1])/1000))
+        value = deg + (min / 60)
+        if coord[-1] == "S" or coord[-1] == "W":
+            value = -value
+        return value
         
-        return dms
         
 import sys
 def main():
     igcFile = open(sys.argv[1], "r")
     parser = IGCParser(igcFile)
     parser.parse()
+    igcFile.close()
     
-    print "DEV PROPS :: %s" % parser.deviceProps
-    print "FLT PROPS :: %s" % parser.flightProps
-    print "TASK :: %s" % parser.task
-    print "EVENTS :: %s" % parser.events
-    print "STSs :: %s" % parser.satellites
-    print "FIX EXTS :: %s" % parser.fixesExtData
-    print "FIX :: %s" % parser.fixes[0]
-    print "EXTD EXTS :: %s" % parser.extensionsExtData
-    if len(parser.extensions) > 0:
-        print "EXT :: %s" % parser.extensions[0]
-    
-    #print parser.toKML()
+    kmlFile = open("/tmp/test.kml", "w") 
+    kmlFile.write(parser.toKML())
+    kmlFile.close()
     
 if __name__ == "__main__":
     main()
