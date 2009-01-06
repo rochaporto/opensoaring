@@ -56,8 +56,7 @@ class IGCParser(object):
         self.flightStats = {}
         self.phases = []        
         self.satellites = []
-        self.task = None
-        
+        self.task = None        
         
     def parse(self):
         if self.data is None:
@@ -200,10 +199,10 @@ class IGCParser(object):
                 self.flightStats["ST"] += phase["DUR"]
                 self.flightStats["SN"] += 1
     
-    def takeoff(self):
+    def takeoffFix(self):
         return self.flightProps["TKF"]
     
-    def landing(self):
+    def landingFix(self):
         return self.flightProps["LDG"]
 
     def toKML(self):
@@ -300,8 +299,10 @@ class IGCParser(object):
                 phase["DIS"] += int(self._distance(self.fixes[i-1]["DFIX"], self.fixes[i]["DFIX"]))
             phase["GS"] = float(phase["DIS"]) / phase["DUR"] * 3600 / 1000.0
             phase["VAR"] = float(phase["AG"]) / phase["DUR"]
-            phase["DH"] = phase["DIS"] / float(phase["AG"])
-            
+            if phase["AG"] != 0:
+                phase["DH"] = phase["DIS"] / float(phase["AG"])
+            else:
+                phase["DH"] = 0            
         
     def _parseTime(self, str):
         if len(str) == 6:
@@ -325,11 +326,13 @@ class IGCParser(object):
         
         pnt1 and pnt2 should be tuples (lat, lon) with decimal coordinates.
         """
-        pnt1 = (radians(pnt1[0]), radians(pnt1[1]))
-        pnt2 = (radians(pnt2[0]), radians(pnt2[1]))
-        return acos( (cos(pnt1[0]) * cos(pnt1[1]) * cos(pnt2[0]) * cos(pnt2[1]))
-        + (cos(pnt1[0]) * sin(pnt1[1]) * cos(pnt2[0]) * sin(pnt2[1])) 
-        + (sin(pnt1[0]) * sin(pnt2[0]))) * IGCParser.EARTH_RADIUS * 1000
+        if not pnt1 == pnt2:
+            pnt1 = (radians(pnt1[0]), radians(pnt1[1]))
+            pnt2 = (radians(pnt2[0]), radians(pnt2[1]))
+            return acos( (cos(pnt1[0]) * cos(pnt1[1]) * cos(pnt2[0]) * cos(pnt2[1]))
+                         + (cos(pnt1[0]) * sin(pnt1[1]) * cos(pnt2[0]) * sin(pnt2[1])) 
+                         + (sin(pnt1[0]) * sin(pnt2[0]))) * IGCParser.EARTH_RADIUS * 1000
+        return 0
         
     def _course(self, pnt1, pnt2):
         pnt1 = (radians(pnt1[0]), radians(pnt1[1]))
@@ -377,8 +380,8 @@ def main():
     
     parser.analyze()
     
-    print "%s :: %s :: %s" % (parser.takeoff()["UTC"], parser.landing()["UTC"],
-                              (parser.landing()["UTC"] - parser.takeoff()["UTC"]).seconds)
+    print "%s :: %s :: %s" % (parser.takeoffFix()["UTC"], parser.landingFix()["UTC"],
+                              (parser.landingFix()["UTC"] - parser.takeoffFix()["UTC"]).seconds)
 
     print "%2s :: %8s :: %8s :: %5s :: %5s :: %5s :: %5s :: %5s :: %5s :: %5s :: %5s" \
         % ("T", "STA UTC", "FIN UTC", "DUR", "ALT S", "ALT F", "ALT D", "DIST", "GS", "VAR", "DH")
