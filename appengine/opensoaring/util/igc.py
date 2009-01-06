@@ -53,9 +53,11 @@ class IGCParser(object):
         self.fixes = []
         self.fixesExtData = {}
         self.flightProps = {}
+        self.flightStats = {}
         self.phases = []        
         self.satellites = []
         self.task = None
+        
         
     def parse(self):
         if self.data is None:
@@ -179,9 +181,24 @@ class IGCParser(object):
         pass
     
     def analyze(self):
-        self._computePhases()
-        (self.flightProps["TKF"], self.flightProps["LDG"]) = (self._computeTakeoff(), 
-                                                              self._computeLanding())
+        # Compute takeoff and landing positions
+        takeoffFixPos, landingFixPos = self._computeTakeoff(), self._computeLanding()
+        self.flightProps["TKF"] = self.fixes[takeoffFixPos]
+        self.flightProps["LDG"] = self.fixes[landingFixPos]
+        
+        # Compute the different flight phases (circling and straight)
+        self._computePhases(takeoffFixPos, landingFixPos)
+        
+        # Compute the overall flight statistics
+        self.flightStats = {"CT": 0, "CN": 0, "CAG": 0, "CAL": 0, "ST": 0, "SN": 0, "SAD": 0,
+                            "SAL": 0, "SDIS": 0, "SAGS": 0, "SDH": 0}
+        for phase in self.phases:
+            if phase["T"] == "C":
+                self.flightStats["CT"] += phase["DUR"]
+                self.flightStats["CN"] += 1
+            else:
+                self.flightStats["ST"] += phase["DUR"]
+                self.flightStats["SN"] += 1
     
     def takeoff(self):
         return self.flightProps["TKF"]
@@ -247,31 +264,44 @@ class IGCParser(object):
             </kml>"""
         return kml
     
-    def _computePhases(self): 
-        self.fixes[0]["T"], self.fixes[0]["TIMED"], self.fixes[1]["T"] = ("S", 0, "S")
-        self.phases.append({"SF": self.fixes[0], "EF": None, "T": "S", "DIS": 0})
-        for i in range(1, len(self.fixes), 1):
-            curFix, prevFix = self.fixes[i], self.fixes[i-1]
-            
-            if self.phases[-1]["T"] == "S":
-                j = 0
-                while (curFix["UTC"] - self.fixes[i-j]["UTC"]).seconds < 45:
-                    j += 1
-                if i-j > 0 and self._distance(self.fixes[i-j]["DFIX"], curFix["DFIX"]) < 200:
-                    self.phases[-1]["EF"] = self.fixes[i-j+1]
-                    self.phases.append({"SF": self.fixes[i-j+1], "EF": None, "T": "C"})
-                    i += j-1
-            elif self.phases[-1]["T"] == "C":
-                j = 0
-                while (curFix["UTC"] - self.fixes[i-j]["UTC"]).seconds < 45:
-                    j += 1
-                if i-j> 0 and (self._distance(self.fixes[i-j]["DFIX"], curFix["DFIX"]) /
-                    (curFix["UTC"] - self.fixes[i-j]["UTC"]).seconds) > 30:
-                    self.phases[-1]["EF"] = self.fixes[i-j+1]
-                    self.phases.append({"SF": self.fixes[i-j+1], "EF": None, "T": "S"})
-                    i += 1
+    def _computePhases(self, takeoffPos, landingPos):
+        self.phases.append({"SF": self.fixes[takeoffPos], "SFPOS": takeoffPos, 
+                            "EF": None, "EFPOS": 0, "T": "S"})
+        
+        # Compute phases one by one
+        for i in range(takeoffPos, landingPos, 1):
+            curFix = self.fixes[i]
+            j, evalFix = 0, curFix
+            while i+j < landingPos and (evalFix["UTC"] - curFix["UTC"]).seconds < 45:
+                j += 1
+                evalFix = self.fixes[i+j]
+            if curFix == evalFix: break
                 
-        self.phases[-1]["EF"] = self.fixes[-1]
+            if self.phases[-1]["T"] == "S":
+                if self._distance(curFix["DFIX"], evalFix["DFIX"]) < 200:
+                    self.phases[-1]["EF"], self.phases[-1]["EFPOS"] = curFix, i
+                    self.phases.append({"SF": curFix, "SFPOS": i, "EF": None, "EFPOS": None, 
+                                        "T": "C"})
+            elif self.phases[-1]["T"] == "C":
+                if (self._distance(curFix["DFIX"], evalFix["DFIX"]) /
+                    (evalFix["UTC"] - curFix["UTC"]).seconds) > 30:
+                    self.phases[-1]["EF"], self.phases[-1]["EFPOS"] = curFix, i
+                    self.phases.append({"SF": curFix, "SFPOS": i, "EF": None, "EFPOS": None, 
+                                        "T": "S"})
+            i += j
+        self.phases[-1]["EF"], self.phases[-1]["EFPOS"] = self.fixes[-1], len(self.fixes)-1
+        
+        # Fill in phase stats values
+        for phase in self.phases:
+            phase["DUR"] = (phase["EF"]["UTC"] - phase["SF"]["UTC"]).seconds
+            phase["AG"] = phase["EF"]["GALT"] - phase["SF"]["GALT"]
+            phase["DIS"] = 0
+            for i in range(phase["SFPOS"]+1, phase["EFPOS"], 1):
+                phase["DIS"] += int(self._distance(self.fixes[i-1]["DFIX"], self.fixes[i]["DFIX"]))
+            phase["GS"] = float(phase["DIS"]) / phase["DUR"] * 3600 / 1000.0
+            phase["VAR"] = float(phase["AG"]) / phase["DUR"]
+            phase["DH"] = phase["DIS"] / float(phase["AG"])
+            
         
     def _parseTime(self, str):
         if len(str) == 6:
@@ -308,15 +338,21 @@ class IGCParser(object):
                       cos(pnt1[0])*sin(pnt2[0])-sin(pnt1[0])*cos(pnt2[0])*cos(pnt2[1]-pnt1[1])) 
         return (degrees(value) + 360) % 360
     
+    def _groundSpeed(self, pnt1, pnt2):
+        if pnt1["UTC"] != pnt2["UTC"]:
+            return self._distance(pnt1["DFIX"], pnt2["DFIX"]) \
+                / (pnt2["UTC"] - pnt1["UTC"]).seconds
+        return 0
+        
     def _computeTakeoff(self):
-        for i in range(1, len(self.fixes)):
-            if self.fixes[i]["GALT"] > self.fixes[i-1]["GALT"]:
-                return self.fixes[i-1]
+        for i in range(0, len(self.fixes)):
+            if self._groundSpeed(self.fixes[i], self.fixes[i+1]) > 20:
+                return i
             
     def _computeLanding(self):
-        for i in range(1, len(self.fixes)):
-            if self.fixes[-i]["GALT"] < self.fixes[-i-1]["GALT"]:
-                return self.fixes[-i+1]
+        for i in range(len(self.fixes) - 1, 0, -1):
+            if self._groundSpeed(self.fixes[i-1], self.fixes[i]) < 20:
+                return i
 
 import sys
 def main():
@@ -344,11 +380,20 @@ def main():
     print "%s :: %s :: %s" % (parser.takeoff()["UTC"], parser.landing()["UTC"],
                               (parser.landing()["UTC"] - parser.takeoff()["UTC"]).seconds)
 
+    print "%2s :: %8s :: %8s :: %5s :: %5s :: %5s :: %5s :: %5s :: %5s :: %5s :: %5s" \
+        % ("T", "STA UTC", "FIN UTC", "DUR", "ALT S", "ALT F", "ALT D", "DIST", "GS", "VAR", "DH")
     for phase in parser.phases:
-        print "%2s :: %8s :: %8s :: %5s :: %5s :: %5s :: %5s" \
+        print "%2s :: %8s :: %8s :: %5s :: %5s :: %5s :: %5s :: %5s :: %.5s :: %.5s :: %.5s" \
             % (phase["T"], phase["SF"]["UTC"].time(), phase["EF"]["UTC"].time(), 
                (phase["EF"]["UTC"] - phase["SF"]["UTC"]).seconds, phase["SF"]["GALT"],
-               phase["EF"]["GALT"], (phase["EF"]["GALT"] - phase["SF"]["GALT"]))
-    
+               phase["EF"]["GALT"], (phase["EF"]["GALT"] - phase["SF"]["GALT"]),
+               phase["DIS"], phase["GS"], phase["VAR"], phase["DH"])
+    print "%5s :: %5s :: %5s :: %5s :: %5s :: %5s" \
+        % (parser.flightStats["CT"], 
+           float(parser.flightStats["CT"]) / (parser.flightStats["CT"] + parser.flightStats["ST"]),
+           parser.flightStats["CN"],
+           parser.flightStats["ST"], 
+           float(parser.flightStats["ST"]) / (parser.flightStats["CT"] + parser.flightStats["ST"]),
+           parser.flightStats["SN"])
 if __name__ == "__main__":
     main()
