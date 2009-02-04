@@ -1,4 +1,6 @@
 /*
+ * Copyright (C) 2008 OpenSoaring <contact@opensoaring.info>.
+ * 
  * This file is part of OpenSoaring.
  *
  * OpenSoaring is free software: you can redistribute it and/or modify
@@ -18,12 +20,17 @@
 
 package opensoaring.client;
 
+import opensoaring.client.flightanalysis.FlightAnalysisApp;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -32,9 +39,11 @@ import com.google.gwt.user.client.ui.Widget;
 public class OpenSoaring extends Composite implements EntryPoint, ClickListener {
 
 	private VerticalPanel mainPanel = new VerticalPanel();
-	private HorizontalPanel headerPanel = new HorizontalPanel();	
-	private HorizontalPanel navItemsPanel = new HorizontalPanel();
+	private FlowPanel headerPanel = new FlowPanel();
+	private FlowPanel navItemsPanel = new FlowPanel();
 	private DeckPanel contentPanel = new DeckPanel();
+	
+	private Hyperlink title = new Hyperlink();
 	
 	public void onModuleLoad() {
 
@@ -44,18 +53,24 @@ public class OpenSoaring extends Composite implements EntryPoint, ClickListener 
 		headerPanel.setStyleName("openSoar-headerPanel");
 		
 		// Navigation Panel
-		HorizontalPanel navPanel = new HorizontalPanel();
+		FlowPanel navPanel = new FlowPanel();
+		title.setText("Open Soaring / ");
+		title.setStylePrimaryName("openSoar-title");
+		navPanel.add(title);
+		HTML subTitle = new HTML("Applications for Pilots and Clubs");
+		subTitle.setStyleName("openSoar-subTitle");
+		navPanel.add(subTitle);
 		navPanel.add(navItemsPanel);
 		navPanel.setStyleName("openSoar-navPanel");
 		
 		// Content Panel + Adding Applications
-		addApplication(openSoarMessages.scheduleAppName(), 	
-				new OpenSoarSchedule(openSoarMessages.scheduleAppName()));
 		addApplication(openSoarMessages.homeAppName(), 
 				new OpenSoarApp(openSoarMessages.homeAppName()));
-		addApplication(openSoarMessages.flightInfoAppName(), 
-				new OpenSoarApp(openSoarMessages.flightInfoAppName()));
-		setSelectedApp(0);
+		addApplication(openSoarMessages.scheduleAppName(), 	
+				new OpenSoarApp(openSoarMessages.scheduleAppName()));
+		addApplication(openSoarMessages.flightAnalysisAppName(), 
+				new FlightAnalysisApp(openSoarMessages.flightAnalysisAppName()));
+		setSelectedApp(2);
 		contentPanel.setStyleName("openSoar-contentPanel");
 		
 		// Main Panel

@@ -1,4 +1,6 @@
 /*
+ * Copyright (C) 2008 OpenSoaring <contact@opensoaring.info>.
+ * 
  * This file is part of OpenSoaring.
  *
  * OpenSoaring is free software: you can redistribute it and/or modify
@@ -24,20 +26,8 @@ public interface OpenSoarMessages extends Messages {
 
 	String scheduleAppName();
 	
-	String flightInfoAppName();
+	String flightAnalysisAppName();
 	
 	String homeAppName();
-	
-	String loading();
-	
-	String loadFailed();
-	
-	String schedule4Days();
-	
-	String scheduleWeek();
-	
-	String scheduleMonth();
-	
-	String infoTest(String buttonName);
 	
 }
