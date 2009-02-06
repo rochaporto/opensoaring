@@ -1,9 +1,8 @@
 package opensoaring.client.map;
 
-import java.util.ArrayList;
-
 import opensoaring.client.igc.flight.Fix;
 import opensoaring.client.igc.flight.Flight;
+import opensoaring.client.map.PolylineEncoder.EncodedPath;
 
 import com.google.gwt.maps.client.MapType;
 import com.google.gwt.maps.client.MapWidget;
@@ -11,7 +10,6 @@ import com.google.gwt.maps.client.control.LargeMapControl;
 import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.maps.client.overlay.Marker;
 import com.google.gwt.maps.client.overlay.Polyline;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.SimplePanel;
 
@@ -39,24 +37,20 @@ public class FlightMap extends SimplePanel {
 		this.setWidget(mapWidget);
 	}
 	
-	public void setFlight(Flight flight) {
-		this.flight = flight;
-	}
-	
-	public Flight getFlight() {
-		return flight;
-	}
-	
 	public void reset() {
 		if (flight != null) {
-			ArrayList<Fix> fixes = flight.getFlightFixes();
-			ArrayList<LatLng> points = new ArrayList<LatLng>();
+			Fix[] fixes = flight.getFlightFixes().toArray(new Fix[] {});
+			/**ArrayList<LatLng> points = new ArrayList<LatLng>();
 			for (int i=0; i<fixes.size(); i+=30) {
 				points.add(LatLng.newInstance(fixes.get(i).getLatitude(), 
 						fixes.get(i).getLongitude()));
-			}
-			Polyline flightPath = new Polyline(points.toArray(new LatLng[]{}));
-
+			}*/
+			PolylineEncoder polyEncoder = new PolylineEncoder();
+			EncodedPath encodedPath = polyEncoder.encode(fixes);
+			Polyline flightPath = Polyline.fromEncoded(encodedPath.getEncodedPoints(), 
+					polyEncoder.getZoomFactor(), encodedPath.getEncodedLevels(), 
+					polyEncoder.getNumLevels());
+			
 			mapWidget.clearOverlays();
 			mapWidget.addOverlay(flightPath);
 			mapWidget.setCenter(flightPath.getBounds().getCenter());
@@ -77,6 +71,14 @@ public class FlightMap extends SimplePanel {
 			mapWidget.panTo(LatLng.newInstance(animationFix.getLatitude(), 
 					animationFix.getLongitude()));
 		}
+	}
+
+	public void setFlight(Flight flight) {
+		this.flight = flight;
+	}
+	
+	public Flight getFlight() {
+		return flight;
 	}
 	
 }
