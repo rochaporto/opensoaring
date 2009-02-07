@@ -4,13 +4,35 @@ import java.util.Date;
 
 import opensoaring.client.igc.flight.Fix;
 import opensoaring.client.igc.flight.FixExtension;
+import opensoaring.client.igc.flight.FlightDeclaration;
 import opensoaring.client.igc.flight.FlightProperties;
 import opensoaring.client.igc.flight.Fix.FixValidity;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
 
+/**
+ * A IGC Log parsing utility, following the technical specification for IGC approved GNSS
+ * flight records. This implementation was based on the document from the 20th May 2008.
+ * 
+ * The document should be available here:
+ * http://www.fai.org/gliding/gnss/tech_spec_gnss.asp
+ * 
+ * @author Ricardo Rocha <rocha@opensoaring.info>
+ * 
+ */
 public class LogParser {
+
+	/**
+	 * The date format used in the IGC records.
+	 */
+	public static DateTimeFormat dateFormat = DateTimeFormat.getFormat("ddMMyy");
 	
+	public static DateTimeFormat timeFormat = DateTimeFormat.getFormat("HHmmss");
+	
+	/**
+	 * An enumeration containing all defined IGC TLCs (Three Letter Codes).
+	 */
 	public static enum TLC {
 		ATS, CCL, CCN, CCO, CDC, CGD, CID, CLB, CM2, DAE, DAN, DB1, DB2, DOB, DTE, 
 		DTM, EDN, ENL, EOF, EON, EUP, FIN, FLP, FRS, FTY, FXA, GAL, GCN, GDC, GID, 
@@ -87,7 +109,6 @@ public class LogParser {
 		// Fill in the flight properties object
 		switch(recordSubType) {
 		case DTE:
-			DateTimeFormat dateFormat = DateTimeFormat.getFormat("ddMMyy");
 			String strDate = record.substring(5, 11);
 			flightProps.setFlightDate(dateFormat.parse(strDate));
 			break;
@@ -108,6 +129,47 @@ public class LogParser {
 			break;
 		default:
 			return;
+		}
+	}
+	
+	public static void parseFlightDeclaration(String record, FlightProperties flightProps) {
+		FlightDeclaration declaration = flightProps.getFlightDeclaration();
+		
+		if (declaration == null) {
+			declaration = new FlightDeclaration();
+			flightProps.setFlightDeclaration(declaration);
+			DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("ddMMyyHHmmss");
+			declaration.setDate(dateTimeFormat.parse(record.substring(1, 7).concat(
+					record.substring(7, 13))));
+			declaration.setFlightDate(dateFormat.parse(record.substring(13, 19)));
+			declaration.setTaskNumber(Integer.parseInt(record.substring(19, 23)));
+			declaration.setNumberTurnpoints(Integer.parseInt(record.substring(23, 25)));
+		} else if (declaration.getNumberTurnpoints() > 0 
+				&& declaration.getTakeoff() == null) {
+			double latitude = LogParser.dms2Decimal(record.substring(1, 9));
+			double longitude = LogParser.dms2Decimal(record.substring(9, 18));
+			declaration.setTakeoff(new Fix(latitude, longitude, 0));
+		} else if (declaration.getNumberTurnpoints() > 0 
+				&& declaration.getStart() == null) {
+			double latitude = LogParser.dms2Decimal(record.substring(1, 9));
+			double longitude = LogParser.dms2Decimal(record.substring(9, 18));
+			declaration.setStart(new Fix(latitude, longitude, 0));
+		} else if (declaration.getNumberTurnpoints() > 0 
+				&& declaration.getTurnPoints().size() 
+				< declaration.getNumberTurnpoints()) {
+			double latitude = LogParser.dms2Decimal(record.substring(1, 9));
+			double longitude = LogParser.dms2Decimal(record.substring(9, 18));
+			declaration.getTurnPoints().add(new Fix(latitude, longitude, 0));
+		} else if (declaration.getNumberTurnpoints() > 0 
+				&& declaration.getFinish() == null) {
+			double latitude = LogParser.dms2Decimal(record.substring(1, 9));
+			double longitude = LogParser.dms2Decimal(record.substring(9, 18));
+			declaration.setFinish(new Fix(latitude, longitude, 0));
+		} else if (declaration.getNumberTurnpoints() > 0 
+				&& declaration.getLanding() == null) {
+			double latitude = LogParser.dms2Decimal(record.substring(1, 9));
+			double longitude = LogParser.dms2Decimal(record.substring(9, 18));
+			declaration.setLanding(new Fix(latitude, longitude, 0));
 		}
 	}
 
@@ -150,10 +212,15 @@ public class LogParser {
 	 * PPPPP       == Pressure Altitude
 	 * GGGGG       == GNSS Altitude
 	 * EXTENSION*  == Values corresponding to the extensions defined in the 'I' record 
+	 * 
+	 * @param record A string containing the IGC 'B' record to parse
+	 * @param flightProps The FlightProperties object containing the extra Fix extensions
+	 * in the 'B' record, which should also be collected
+	 * 
+	 * @return The Fix object containing the parsed info
 	 */
 	public static Fix parseFix(String record, FlightProperties flightProps) {
 
-		DateTimeFormat timeFormat = DateTimeFormat.getFormat("HHmmss");
 		String strTime = record.substring(1, 7);
 		Date time = timeFormat.parse(strTime);
 		
@@ -172,6 +239,12 @@ public class LogParser {
 		return fix;
 	}
 	
+	/**
+	 * Converts a DMS coordinate (degrees,minutes,seconds) to a decimal coordinate.
+	 * 
+	 * @param dmsStr A string containing the DMS coordinate
+	 * @return The decimal equivalent to the DMS coordinate
+	 */
     public static double dms2Decimal(String dmsStr) {
     	double degrees, minutes, value;
     	if (dmsStr.length() == 8) { // Latitude

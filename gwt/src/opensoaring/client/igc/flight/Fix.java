@@ -27,6 +27,12 @@ public class Fix {
 		
 	}
 	
+	public Fix(double latitude, double longitude, int gnssAltitude) {
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.gnssAltitude = gnssAltitude;
+	}
+	
 	public Fix(Date time, double latitude, double longitude, FixValidity fixValidity,
 			int pressureAltitude, int gnssAltitude) {
 		this.time = time;
@@ -90,7 +96,11 @@ public class Fix {
 	public double getLatitude() {
 		return latitude;
 	}
-
+	
+	public double getLatitudeRadians() {
+		return Math.toRadians(latitude);
+	}
+	
 	/**
 	 * @param latitude the latitude to set
 	 */
@@ -103,6 +113,10 @@ public class Fix {
 	 */
 	public double getLongitude() {
 		return longitude;
+	}
+
+	public double getLongitudeRadians() {
+		return Math.toRadians(longitude);
 	}
 
 	/**
@@ -153,5 +167,4 @@ public class Fix {
 	public void setGnssAltitude(int gnssAltitude) {
 		this.gnssAltitude = gnssAltitude;
 	}
-	
 }

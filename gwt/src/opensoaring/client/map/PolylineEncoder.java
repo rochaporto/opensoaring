@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import com.google.gwt.core.client.GWT;
+
 import opensoaring.client.igc.flight.Fix;
 
 /**
@@ -203,7 +205,8 @@ public class PolylineEncoder {
 		Collections.sort(pointsToKeep);
 		
 		// Create the encodings and return
-		return createEncodings(fixes, pointsToKeep, distances);		
+		EncodedPath encodedPath = createEncodings(fixes, pointsToKeep, distances);
+		return encodedPath;
 	}
 	
 	/**

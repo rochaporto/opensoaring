@@ -25,6 +25,8 @@ public class FlightProperties {
 	
 	private ArrayList<FixExtension> fixExtensions = new ArrayList<FixExtension>();
 
+	private FlightDeclaration flightDeclaration;
+	
 	public FlightProperties() {
 		
 	}
@@ -176,6 +178,20 @@ public class FlightProperties {
 		this.flightDate = flightDate;
 	}
 	
+	/**
+	 * @return the flightDeclaration
+	 */
+	public FlightDeclaration getFlightDeclaration() {
+		return flightDeclaration;
+	}
+
+	/**
+	 * @param flightDeclaration the flightDeclaration to set
+	 */
+	public void setFlightDeclaration(FlightDeclaration flightDeclaration) {
+		this.flightDeclaration = flightDeclaration;
+	}
+
 	public String toString() {
 		return "MAN :: " + recorderManufacturer
 			+ " :: UID :: " + recorderId

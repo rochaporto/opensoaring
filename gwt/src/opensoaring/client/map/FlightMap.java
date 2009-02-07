@@ -1,7 +1,10 @@
 package opensoaring.client.map;
 
+import java.util.ArrayList;
+
 import opensoaring.client.igc.flight.Fix;
 import opensoaring.client.igc.flight.Flight;
+import opensoaring.client.igc.flight.FlightDeclaration;
 import opensoaring.client.map.PolylineEncoder.EncodedPath;
 
 import com.google.gwt.maps.client.MapType;
@@ -9,8 +12,8 @@ import com.google.gwt.maps.client.MapWidget;
 import com.google.gwt.maps.client.control.LargeMapControl;
 import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.maps.client.overlay.Marker;
+import com.google.gwt.maps.client.overlay.PolyStyleOptions;
 import com.google.gwt.maps.client.overlay.Polyline;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 public class FlightMap extends SimplePanel {
@@ -22,6 +25,10 @@ public class FlightMap extends SimplePanel {
 	private int animPosition = 0;
 	
 	private Marker animationMarker;
+	
+	private PolyStyleOptions flightPathStyle = PolyStyleOptions.newInstance("#0000ff", 3, 0.6);
+	
+	private PolyStyleOptions taskPathStyle = PolyStyleOptions.newInstance("#ff0000", 2, 0.5);
 	
 	public FlightMap() {
 		 
@@ -39,19 +46,34 @@ public class FlightMap extends SimplePanel {
 	
 	public void reset() {
 		if (flight != null) {
+
+			mapWidget.clearOverlays();
+			
 			Fix[] fixes = flight.getFlightFixes().toArray(new Fix[] {});
-			/**ArrayList<LatLng> points = new ArrayList<LatLng>();
-			for (int i=0; i<fixes.size(); i+=30) {
-				points.add(LatLng.newInstance(fixes.get(i).getLatitude(), 
-						fixes.get(i).getLongitude()));
-			}*/
+			
 			PolylineEncoder polyEncoder = new PolylineEncoder();
 			EncodedPath encodedPath = polyEncoder.encode(fixes);
 			Polyline flightPath = Polyline.fromEncoded(encodedPath.getEncodedPoints(), 
 					polyEncoder.getZoomFactor(), encodedPath.getEncodedLevels(), 
 					polyEncoder.getNumLevels());
+			flightPath.setStrokeStyle(flightPathStyle);
 			
-			mapWidget.clearOverlays();
+			FlightDeclaration flightDeclaration = flight.getFlightProps().getFlightDeclaration();
+			if (flightDeclaration.getNumberTurnpoints() > 0) {
+				ArrayList<LatLng> taskPoints = new ArrayList<LatLng>();
+				taskPoints.add(LatLng.newInstance(flightDeclaration.getStart().getLatitude(), 
+						flightDeclaration.getStart().getLongitude()));
+				for (Fix turnPoint: flightDeclaration.getTurnPoints()) {
+					taskPoints.add(LatLng.newInstance(turnPoint.getLatitude(), 
+							turnPoint.getLongitude()));
+				}
+				taskPoints.add(LatLng.newInstance(flightDeclaration.getFinish().getLatitude(), 
+						flightDeclaration.getFinish().getLongitude()));
+				Polyline taskPath = new Polyline(taskPoints.toArray(new LatLng[] {}));
+				taskPath.setStrokeStyle(taskPathStyle);
+				mapWidget.addOverlay(taskPath);
+			}
+			
 			mapWidget.addOverlay(flightPath);
 			mapWidget.setCenter(flightPath.getBounds().getCenter());
 			mapWidget.setZoomLevel(mapWidget.getBoundsZoomLevel(flightPath.getBounds()));

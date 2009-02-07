@@ -26,6 +26,7 @@ import opensoaring.client.json.JsonClient;
 import opensoaring.client.json.JsonpListener;
 import opensoaring.client.map.FlightMap;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONObject;
@@ -103,7 +104,8 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 
 	public void onClick(Widget sender) {
 		if (sender == load) {
-			JsonClient.getJsonp("http://localhost:9999/NetCoupe2008_13437.igc?", this);
+			JsonClient.getJsonp("http://localhost:9999/NetCoupe2008_5138.igc?", this);
+			//JsonClient.getJsonp("http://localhost:9999/NetCoupe2008_13437.igc?", this);
 		} else if(sender == animStart) {
 			start();
 		} else if(sender == animStop) {
@@ -115,7 +117,7 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 		JSONObject resp = new JSONObject(jsonResponse);
 		
 		flight = new Flight(resp.get("data").isString().stringValue());
-		flight.parse();
+		flight.parseAndValidate();
 		flightMap.setFlight(flight);
 		flightMap.reset();
 		

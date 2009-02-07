@@ -2,10 +2,15 @@ package opensoaring.client.igc.flight;
 
 import java.util.ArrayList;
 
+import com.google.gwt.core.client.GWT;
+
 import opensoaring.client.igc.LogParser;
+import opensoaring.client.igc.LogUtil;
 
 public class Flight {
 
+	private double maxSpeed = 350;
+	
 	private String igcData;
 	
 	private FlightProperties flightProps;
@@ -57,6 +62,20 @@ public class Flight {
 		this.flightFixes = flightFixes;
 	}
 
+	/**
+	 * @return the maxSpeed
+	 */
+	public double getMaxSpeed() {
+		return maxSpeed;
+	}
+
+	/**
+	 * @param maxSpeed the maxSpeed to set
+	 */
+	public void setMaxSpeed(double maxSpeed) {
+		this.maxSpeed = maxSpeed;
+	}
+
 	public void parse() {
 		String[] records = igcData.split("\n");
 		
@@ -69,6 +88,8 @@ public class Flight {
 			case 'B':
 				flightFixes.add(LogParser.parseFix(record, flightProps));
 				break;
+			case 'C':
+				LogParser.parseFlightDeclaration(record, flightProps);
 			case 'H':
 				LogParser.parseHeaderInfo(record, flightProps);
 				break;
@@ -77,8 +98,21 @@ public class Flight {
 				break;
 			}
 		}
-		
-		//Window.alert(flightProps + " :: " + flightFixes.size());
+	}
+	
+	public void validate() {
+		for (int i=1; i<flightFixes.size(); i++) {
+			double speed = LogUtil.groundSpeed(flightFixes.get(i-1), flightFixes.get(i));
+			if (speed > maxSpeed) {
+				flightFixes.remove(i);
+				++i;
+			}
+		}
+	}
+	
+	public void parseAndValidate() {
+		parse();
+		validate();
 	}
 	
 }
