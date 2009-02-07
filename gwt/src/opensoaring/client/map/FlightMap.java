@@ -20,7 +20,7 @@ public class FlightMap extends SimplePanel {
 	
 	private Flight flight;
 	
-	private MapWidget mapWidget = new MapWidget();
+	public MapWidget mapWidget = new MapWidget();
 	
 	private int animPosition = 0;
 	

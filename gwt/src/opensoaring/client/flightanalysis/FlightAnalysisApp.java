@@ -20,8 +20,12 @@
 
 package opensoaring.client.flightanalysis;
 
+import java.util.ArrayList;
+
 import opensoaring.client.OpenSoarApp;
+import opensoaring.client.igc.flight.Fix;
 import opensoaring.client.igc.flight.Flight;
+import opensoaring.client.igc.optimize.FAI3TPOptimizer;
 import opensoaring.client.json.JsonClient;
 import opensoaring.client.json.JsonpListener;
 import opensoaring.client.map.FlightMap;
@@ -30,6 +34,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.maps.client.geom.LatLng;
+import com.google.gwt.maps.client.overlay.PolyStyleOptions;
+import com.google.gwt.maps.client.overlay.Polyline;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -59,6 +66,8 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 	private Button animStart = new Button("Start");
 	
 	private Button animStop = new Button("Stop");
+	
+	private Button optimize = new Button("Optimize");
 	
 	private Label flightDate = new Label();
 	
@@ -110,6 +119,8 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 			start();
 		} else if(sender == animStop) {
 			stop();
+		} else if(sender == optimize) {
+			optimize();
 		}
 	}
 
@@ -160,6 +171,8 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 		animControls.add(animStart);
 		animStop.addClickListener(this);
 		animControls.add(animStop);
+		optimize.addClickListener(this);
+		animControls.add(optimize);
 		displayControl.add(animControls);
 		
 		Grid animDetails = new Grid();
@@ -203,5 +216,18 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 	
 	public void stop() {
 		animTimer.cancel();
+	}
+	
+	public void optimize() {
+		Fix[] optimizedFixes = new FAI3TPOptimizer().optimize(flight);
+		ArrayList<LatLng> legPoints = new ArrayList<LatLng>();
+		for (Fix fix: optimizedFixes) {
+			GWT.log("START :: " + fix.getLatitude() + " :: END :: " + fix.getLongitude(), null);
+			legPoints.add(LatLng.newInstance(fix.getLatitude(), fix.getLongitude()));
+		}
+		Polyline optimizedPath = new Polyline(legPoints.toArray(new LatLng[] {}));
+		PolyStyleOptions optimizedStyle = PolyStyleOptions.newInstance("#000000", 2, 0.8);
+		optimizedPath.setStrokeStyle(optimizedStyle);
+		flightMap.mapWidget.addOverlay(optimizedPath);
 	}
 }
