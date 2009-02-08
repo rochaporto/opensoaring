@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 OpenSoaring <contact@opensoaring.info>.
+ * Copyright (C) 2009 OpenSoaring <contact@opensoaring.info>.
  * 
  * This file is part of OpenSoaring.
  *
