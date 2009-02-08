@@ -77,5 +77,24 @@ public class LogUtil {
 		}
 		return false;
 	}
+	 
+	/**
+	 * Returns the course (heading) from one Fix (point) to another.
+	 * 
+	 * @param from The start point
+	 * @param to The end point
+	 * @return The course (in degrees) to get from the given first point to the second one
+	 */
+	public static double course(Fix from, Fix to) {
+		double fromLat = from.getLatitudeRadians();
+		double fromLon = from.getLongitudeRadians();
+		double toLat = to.getLatitudeRadians();
+		double toLon = to.getLongitudeRadians();
+		
+		double course = Math.atan2(Math.sin(toLon-fromLon) * Math.cos(toLat),
+				(Math.cos(fromLat) * Math.sin(toLat)) 
+				- (Math.sin(fromLat) * Math.cos(toLat) * Math.cos(toLon - fromLon)));
+		return (Math.toDegrees(course) + 360) % 360;		
+	}
 	
 }

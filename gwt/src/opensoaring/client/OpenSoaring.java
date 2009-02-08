@@ -20,7 +20,7 @@
 
 package opensoaring.client;
 
-import opensoaring.client.flightanalysis.FlightAnalysisApp;
+import opensoaring.client.flight.analysis.FlightAnalysisApp;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
