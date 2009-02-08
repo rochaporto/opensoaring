@@ -128,7 +128,10 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 		JSONObject resp = new JSONObject(jsonResponse);
 		
 		flight = new Flight(resp.get("data").isString().stringValue());
-		flight.parseAndValidate();
+		flight.parse();
+		FlightAnalyzer flightAnalyzer = new FlightAnalyzer(flight);
+		flightAnalyzer.validate();
+		flightAnalyzer.analyze();
 		flightMap.setFlight(flight);
 		flightMap.reset();
 		

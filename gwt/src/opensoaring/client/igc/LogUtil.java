@@ -91,10 +91,13 @@ public class LogUtil {
 		double toLat = to.getLatitudeRadians();
 		double toLon = to.getLongitudeRadians();
 		
-		double course = Math.atan2(Math.sin(toLon-fromLon) * Math.cos(toLat),
-				(Math.cos(fromLat) * Math.sin(toLat)) 
-				- (Math.sin(fromLat) * Math.cos(toLat) * Math.cos(toLon - fromLon)));
-		return (Math.toDegrees(course) + 360) % 360;		
+		double course = Math.atan2(
+				(
+						(Math.cos(fromLat) * Math.sin(toLat)) 
+						- (Math.sin(fromLat) * Math.cos(toLat) * Math.cos(toLon - fromLon))
+				), Math.sin(toLon - fromLon) * Math.cos(toLat));
+
+		return (Math.toDegrees(course) + 360) % 360;
 	}
 	
 }

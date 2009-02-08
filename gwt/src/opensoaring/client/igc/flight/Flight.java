@@ -2,80 +2,105 @@ package opensoaring.client.igc.flight;
 
 import java.util.ArrayList;
 
-import com.google.gwt.core.client.GWT;
-
 import opensoaring.client.igc.LogParser;
-import opensoaring.client.igc.LogUtil;
 
+/**
+ * Represents an IGC flight log, including its raw and parsed data.
+ * 
+ * @author Ricardo Rocha <rocha@opensoaring.info>
+ *
+ */
 public class Flight {
 
-	private double maxSpeed = 350;
-	
+	/**
+	 * A string containing the IGC raw data.
+	 */
 	private String igcData;
 	
+	/**
+	 * An object containing the multiple properties of this flight, parsed from the raw IGC log.
+	 */
 	private FlightProperties flightProps;
 	
+	/**
+	 * The list of Fix objects parsed from the IGC flight log.
+	 */
 	private ArrayList<Fix> flightFixes = new ArrayList<Fix>();
 	
+	/**
+	 * Class constructor.
+	 */
 	public Flight() {
 		this(null);
 	}
 	
+	/**
+	 * Class constructor.
+	 * 
+	 * @param igcData A String containing the raw IGC flight log data
+	 */
 	public Flight(String igcData) {
 		this.igcData = igcData;
 		this.flightProps = new FlightProperties();
 	}
 	
+	/**
+	 * Returns the raw IGC flight log data.
+	 * 
+	 * @return The raw IGC flight log data
+	 */
 	public String getIgcData() {
 		return igcData;
 	}
 	
+	/**
+	 * Sets the raw IGC flight log data of the object.
+	 * 
+	 * @param igcData The raw IGC flight log data
+	 */
 	public void setIgcData(String igcData) {
 		this.igcData = igcData;
 	}
 	
 	/**
-	 * @return the flightProps
+	 * Returns the object containing the properties of the Flight (parsed from the IGC log).
+	 * 
+	 * @return The object containing the properties of the Flight (parsed from the IGC log).
 	 */
 	public FlightProperties getFlightProps() {
 		return flightProps;
 	}
 
 	/**
-	 * @param flightProps the flightProps to set
+	 * Sets the properties of the flight (parsed from the IGC log).
+	 * 
+	 * @param flightProps The properties of the flight (parsed from the IGC log).
 	 */
 	public void setFlightProps(FlightProperties flightProps) {
 		this.flightProps = flightProps;
 	}
 
 	/**
-	 * @return the flightFixes
+	 * Returns the list of Fix objects of the Flight (taken from the IGC log data).
+	 * 
+	 * @return The list of Fix objects of the Flight (taken from the IGC log data)
 	 */
 	public ArrayList<Fix> getFlightFixes() {
 		return flightFixes;
 	}
 
 	/**
-	 * @param flightFixes the flightFixes to set
+	 * Sets the list of Fix objects taken from the IGC log data.
+	 * 
+	 * @param flightFixes The list of Fix objects taken from the IGC log data.
 	 */
 	public void setFlightFixes(ArrayList<Fix> flightFixes) {
 		this.flightFixes = flightFixes;
 	}
 
 	/**
-	 * @return the maxSpeed
+	 * Parses the data in this IGC Flight log.
 	 */
-	public double getMaxSpeed() {
-		return maxSpeed;
-	}
-
-	/**
-	 * @param maxSpeed the maxSpeed to set
-	 */
-	public void setMaxSpeed(double maxSpeed) {
-		this.maxSpeed = maxSpeed;
-	}
-
 	public void parse() {
 		String[] records = igcData.split("\n");
 		
@@ -99,20 +124,5 @@ public class Flight {
 			}
 		}
 	}
-	
-	public void validate() {
-		for (int i=1; i<flightFixes.size(); i++) {
-			double speed = LogUtil.groundSpeed(flightFixes.get(i-1), flightFixes.get(i));
-			if (speed > maxSpeed) {
-				flightFixes.remove(i);
-				++i;
-			}
-		}
-	}
-	
-	public void parseAndValidate() {
-		parse();
-		validate();
-	}
-	
+		
 }

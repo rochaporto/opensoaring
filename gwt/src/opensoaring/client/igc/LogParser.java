@@ -28,7 +28,7 @@ public class LogParser {
 	 */
 	public static DateTimeFormat dateFormat = DateTimeFormat.getFormat("ddMMyy");
 	
-	public static DateTimeFormat timeFormat = DateTimeFormat.getFormat("HHmmss");
+	public static DateTimeFormat timeFormat = DateTimeFormat.getFormat("HHmmssZZZ");
 	
 	/**
 	 * An enumeration containing all defined IGC TLCs (Three Letter Codes).
@@ -222,7 +222,7 @@ public class LogParser {
 	public static Fix parseFix(String record, FlightProperties flightProps) {
 
 		String strTime = record.substring(1, 7);
-		Date time = timeFormat.parse(strTime);
+		Date time = timeFormat.parse(strTime + "GMT");
 		
 		double latitude = LogParser.dms2Decimal(record.substring(7, 15));
 		double longitude = LogParser.dms2Decimal(record.substring(15, 24));
