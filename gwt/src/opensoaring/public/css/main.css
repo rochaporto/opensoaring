@@ -2,7 +2,7 @@
  * -- HTML tags direct customization 
  * ---- ---- ---- ---- ---- ---- ---- */
 body {
-	font-family: Arial;
+	font-family: helvetica,arial,clean,sans-serif;
 	margin: 5px auto auto auto;
 	width: 98%;
 }
