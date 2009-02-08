@@ -30,7 +30,6 @@ import opensoaring.client.json.JsonClient;
 import opensoaring.client.json.JsonpListener;
 import opensoaring.client.map.FlightMap;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONObject;
@@ -76,8 +75,6 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 	private Label gliderType = new Label();
 	
 	private Label gliderId = new Label();
-	
-	private Label registration = new Label();
 	
 	private Label animPositionTime = new Label();
 	
@@ -128,7 +125,6 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 		JSONObject resp = new JSONObject(jsonResponse);
 		
 		flight = new Flight(resp.get("data").isString().stringValue());
-		flight.parse();
 		FlightAnalyzer flightAnalyzer = new FlightAnalyzer(flight);
 		flightAnalyzer.validate();
 		flightAnalyzer.analyze();
@@ -162,10 +158,10 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 		gliderTypeTitle.setStyleName("openSoarFA-title");
 		flightDetails.setWidget(2, 0, gliderTypeTitle);
 		flightDetails.setWidget(2, 1, gliderType);
-		Label registrationTitle = new Label("Registration");
-		registrationTitle.setStyleName("openSoarFA-title");
-		flightDetails.setWidget(3, 0, registrationTitle);
-		flightDetails.setWidget(3, 1, registration);
+		Label gliderIdTitle = new Label("Registration");
+		gliderIdTitle.setStyleName("openSoarFA-title");
+		flightDetails.setWidget(3, 0, gliderIdTitle);
+		flightDetails.setWidget(3, 1, gliderId);
 		displayControl.add(flightDetails);
 		
 		FlowPanel animControls = new FlowPanel();
@@ -225,7 +221,6 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 		Fix[] optimizedFixes = new FAI3TPOptimizer().optimize(flight);
 		ArrayList<LatLng> legPoints = new ArrayList<LatLng>();
 		for (Fix fix: optimizedFixes) {
-			GWT.log("START :: " + fix.getLatitude() + " :: END :: " + fix.getLongitude(), null);
 			legPoints.add(LatLng.newInstance(fix.getLatitude(), fix.getLongitude()));
 		}
 		Polyline optimizedPath = new Polyline(legPoints.toArray(new LatLng[] {}));

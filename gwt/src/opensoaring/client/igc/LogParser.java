@@ -46,6 +46,9 @@ public class LogParser {
 	 */
 	public static DateTimeFormat dateFormat = DateTimeFormat.getFormat("ddMMyy");
 	
+	/**
+	 * The time format used in the IGC records.
+	 */
 	public static DateTimeFormat timeFormat = DateTimeFormat.getFormat("HHmmssZZZ");
 	
 	/**
