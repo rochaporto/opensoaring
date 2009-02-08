@@ -26,7 +26,7 @@
     
       <!-- Specify the application specific style sheet.              -->
       <stylesheet src='css/main.css' />
-      <stylesheet src='css/flightanalysis.css' />
+      <stylesheet src='css/analysis.css' />
 	
 	  <source path="client"/>
 	  <source path="json"/>
