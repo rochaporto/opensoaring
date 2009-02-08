@@ -5,28 +5,67 @@ import java.util.Date;
 
 public class FlightDeclaration {
 
+	/**
+	 * The date at which the declaration was made.
+	 */
 	private Date date;
 	
+	/**
+	 * The date of the actual flight which performed the declared flight.
+	 */
 	private Date flightDate;
 	
+	/**
+	 * The ID of the task within a day.
+	 */
 	private int taskNumber;
 	
+	/**
+	 * The total number of turn points in the flight declaration.
+	 */
 	private int numberTurnpoints;
 	
+	/**
+	 * The declared takeoff point. 
+	 */
 	private Fix takeoff;
 	
+	/**
+	 * The declared start point.
+	 */
 	private Fix start;
 	
+	/**
+	 * The declared set of turn points.
+	 */
 	private ArrayList<Fix> turnPoints;
 	
+	/**
+	 * The declared finish point.
+	 */
 	private Fix finish;
 	
+	/**
+	 * The declared landing point.
+	 */
 	private Fix landing;
 	
+	/**
+	 * Class constructor.
+	 */
 	public FlightDeclaration() {
 		this(null, null, new ArrayList<Fix>(), null, null);
 	}
 	
+	/**
+	 * Class constructor.
+	 * 
+	 * @param takeoff The takeoff point of the declaration
+	 * @param start The start point of the declaration
+	 * @param turnPoints The list of turn points in the declaration
+	 * @param finish The finish point of the declaration
+	 * @param landing The landing point of the declaration
+	 */
 	public FlightDeclaration(Fix takeoff, Fix start, ArrayList<Fix> turnPoints, 
 			Fix finish, Fix landing) {
 		this.takeoff = takeoff;
@@ -37,126 +76,162 @@ public class FlightDeclaration {
 	}
 
 	/**
-	 * @return the date
+	 * Returns the date of the declaration.
+	 * 
+	 * @return The date of the declaration
 	 */
 	public Date getDate() {
 		return date;
 	}
 
 	/**
-	 * @param date the date to set
+	 * Sets the date of the declaration.
+	 * 
+	 * @param date The date to set
 	 */
 	public void setDate(Date date) {
 		this.date = date;
 	}
 
 	/**
-	 * @return the flightDate
+	 * Returns the date of the actual flight.
+	 * 
+	 * @return The date of the actual flight 
 	 */
 	public Date getFlightDate() {
 		return flightDate;
 	}
 
 	/**
-	 * @param flightDate the flightDate to set
+	 * Sets the date of the actual flight.
+	 * 
+	 * @param flightDate The date of the actual flight to set 
 	 */
 	public void setFlightDate(Date flightDate) {
 		this.flightDate = flightDate;
 	}
 
 	/**
-	 * @return the taskNumber
+	 * Returns the ID of the task within the day.
+	 * 
+	 * @return The ID of the task within the day
 	 */
 	public int getTaskNumber() {
 		return taskNumber;
 	}
 
 	/**
-	 * @param taskNumber the taskNumber to set
+	 * Sets the ID of the task within the day.
+	 * 
+	 * @param taskNumber The ID of the task within the day
 	 */
 	public void setTaskNumber(int taskNumber) {
 		this.taskNumber = taskNumber;
 	}
 
 	/**
-	 * @return the numberTurnpoints
+	 * Returns the number of turn points of the declared task.
+	 * 
+	 * @return The number of turn points of the declared task
 	 */
 	public int getNumberTurnpoints() {
 		return numberTurnpoints;
 	}
 
 	/**
-	 * @param numberTurnpoints the numberTurnpoints to set
+	 * Sets the number of turn points of the declared task.
+	 * 
+	 * @param numberTurnpoints The number of turnpoints to set
 	 */
 	public void setNumberTurnpoints(int numberTurnpoints) {
 		this.numberTurnpoints = numberTurnpoints;
 	}
 
 	/**
-	 * @return the takeoff
+	 * Returns the declared takeoff point.
+	 * 
+	 * @return The declared takeoff point
 	 */
 	public Fix getTakeoff() {
 		return takeoff;
 	}
 
 	/**
-	 * @param takeoff the takeoff to set
+	 * Sets the declared takeoff point.
+	 * 
+	 * @param takeoff The takeoff point to set
 	 */
 	public void setTakeoff(Fix takeoff) {
 		this.takeoff = takeoff;
 	}
 
 	/**
-	 * @return the start
+	 * Returns the declared start point.
+	 * 
+	 * @return The declared start point
 	 */
 	public Fix getStart() {
 		return start;
 	}
 
 	/**
-	 * @param start the start to set
+	 * Sets the declared start point.
+	 * 
+	 * @param start The declared start point to set
 	 */
 	public void setStart(Fix start) {
 		this.start = start;
 	}
 
 	/**
-	 * @return the turnPoints
+	 * Returns the list of declared turn point.
+	 * 
+	 * @return The list of declared turn points
 	 */
 	public ArrayList<Fix> getTurnPoints() {
 		return turnPoints;
 	}
 
 	/**
-	 * @param turnPoints the turnPoints to set
+	 * Sets the list of declared turn points.
+	 * 
+	 * @param turnPoints The list of declared turn points to set
 	 */
 	public void setTurnPoints(ArrayList<Fix> turnPoints) {
 		this.turnPoints = turnPoints;
 	}
 
 	/**
-	 * @return the finish
+	 * Returns the declared finish point.
+	 * 
+	 * @return The declared finish point
 	 */
 	public Fix getFinish() {
 		return finish;
 	}
 
 	/**
-	 * @param finish the finish to set
+	 * Sets the declared finish point.
+	 * 
+	 * @param finish The declared finish point to set
 	 */
 	public void setFinish(Fix finish) {
 		this.finish = finish;
 	}
 
 	/**
-	 * @return the landing
+	 * Returns the declared landing point.
+	 * 
+	 * @return The declared landing point
 	 */
 	public Fix getLanding() {
 		return landing;
 	}
 
 	/**
-	 * @param landing the landing to set
+	 * Sets the declared landing point.
+	 * 
+	 * @param landing The landing point to set
 	 */
 	public void setLanding(Fix landing) {
 		this.landing = landing;
