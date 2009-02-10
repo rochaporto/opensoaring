@@ -30,7 +30,7 @@ import opensoaring.client.igc.flight.Flight;
 
 public interface FlightOptimizer {
 
-	public Fix[] optimize(Flight flight);
+	public Fix[] optimize();
 	
 	public String getDescription();
 	

@@ -14,7 +14,7 @@
 	width: 75%;
 }
 
-.openSoarFA-displayControlPanel {
+.openSoarFA-detailsPanel {
 	border: solid 1px #dddddd;
 	float: left;
 	height: 420px;
@@ -48,4 +48,8 @@
 	height: 190px;
 	margin: 3px;
 	width: 100%;
+}
+
+.gwt-Button {
+	font-size: 80%;
 }

@@ -204,7 +204,7 @@ public class PolylineEncoder {
 		int start = 0;
 		int end = fixes.length-1;
 		
-		// We always keep the first and last (and assign a distance of 0 so that
+		// We always keep the first and last (and assign a distance of 0 so that they
 		// are always visible)
 		pointsToKeep.add(0);
 		distances.put(0, 0.0);

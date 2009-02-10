@@ -44,7 +44,7 @@ public class LogUtil {
 	 * @param from The origin coordinate
 	 * @param to The destination coordinate
 	 * @param earthRadius The Earth radius to be considered for the calculation
-	 * @return The great circle distance between the two given coordinates
+	 * @return The great circle distance between the two given coordinates (in kms)
 	 */
 	public static double distance(Fix from, Fix to, double earthRadius) {
         if (!LogUtil.isSameLocation(from, to)) {
@@ -62,7 +62,7 @@ public class LogUtil {
 	 * 
 	 * @param from The origin coordinate
 	 * @param to The destination coordinate
-	 * @return The great circle distance between the two given coordinates
+	 * @return The great circle distance between the two given coordinates (in kms)
 	 */
 	public static double distance(Fix from, Fix to) {
 		return LogUtil.distance(from, to, LogUtil.EARTH_RADIUS);

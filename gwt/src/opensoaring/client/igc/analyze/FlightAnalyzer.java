@@ -17,14 +17,14 @@
  * along with OpenSoaring.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package opensoaring.client.flight.analysis;
+package opensoaring.client.igc.analyze;
 
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
 
-import opensoaring.client.flight.analysis.FlightPhase.PhaseType;
 import opensoaring.client.igc.LogUtil;
+import opensoaring.client.igc.analyze.FlightPhase.PhaseType;
 import opensoaring.client.igc.flight.Fix;
 import opensoaring.client.igc.flight.Flight;
 

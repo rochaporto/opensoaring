@@ -17,7 +17,7 @@
  * along with OpenSoaring.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package opensoaring.client.flight.analysis;
+package opensoaring.client.igc.analyze;
 
 public class FlightPhase {
 

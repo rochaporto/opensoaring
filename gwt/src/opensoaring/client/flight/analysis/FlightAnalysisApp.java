@@ -23,6 +23,8 @@ package opensoaring.client.flight.analysis;
 import java.util.ArrayList;
 
 import opensoaring.client.OpenSoarApp;
+import opensoaring.client.igc.LogUtil;
+import opensoaring.client.igc.analyze.FlightAnalyzer;
 import opensoaring.client.igc.flight.Fix;
 import opensoaring.client.igc.flight.Flight;
 import opensoaring.client.igc.optimize.FAI3TPOptimizer;
@@ -30,6 +32,7 @@ import opensoaring.client.json.JsonClient;
 import opensoaring.client.json.JsonpListener;
 import opensoaring.client.map.FlightMap;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONObject;
@@ -43,40 +46,21 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, JsonpListener {
+public class FlightAnalysisApp extends OpenSoarApp implements JsonpListener {
 	
 	private VerticalPanel mainPanel = new VerticalPanel();
 
 	private FlowPanel displayPanel = new FlowPanel();
 	
-	private VerticalPanel visualDisplayPanel = new VerticalPanel();
+	private PanelVisual visualPanel;
 	
-	private VerticalPanel displayControlPanel = new VerticalPanel();
+	private PanelDetails detailsPanel;
 	
-	private VerticalPanel moreInfoPanel = new VerticalPanel();
-	
-	private FlightMap flightMap;
-	
-	private Button load = new Button("Load");
-	
-	private Button animStart = new Button("Start");
-	
-	private Button animStop = new Button("Stop");
-	
-	private Button optimize = new Button("Optimize");
-	
-	private Label flightDate = new Label();
-	
-	private Label pilotInCharge = new Label();
-	
-	private Label gliderType = new Label();
-	
-	private Label gliderId = new Label();
-	
-	private Label animPositionTime = new Label();
+	private PanelAdditionalInfo additionalInfoPanel;
 	
 	private int animPosition = 0;
 	
@@ -87,119 +71,28 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 	public FlightAnalysisApp(String caption) {
 		super(caption);
 
+		visualPanel = new PanelVisual(this);
+		detailsPanel = new PanelDetails(this);
+		additionalInfoPanel = new PanelAdditionalInfo(this);
+		 
 		flight = new Flight();
-		
-		flightMap = new FlightMap();
-		visualDisplayPanel.add(flightMap);
-		visualDisplayPanel.setStyleName("openSoarFA-visualDisplayPanel");
-
-		displayControlPanel = getDisplayControlPanel();
 	
-		displayPanel.add(visualDisplayPanel);
-		displayPanel.add(displayControlPanel);
-		displayPanel.setStyleName("openSoarFA-displayPanel");			
+		displayPanel.add(visualPanel);
+		displayPanel.add(detailsPanel);			
 		mainPanel.add(displayPanel);
 		
-		moreInfoPanel.setStyleName("openSoarFA-moreInfoPanel");
-		moreInfoPanel.add(new HTML("I"));
-		mainPanel.add(moreInfoPanel);
+		additionalInfoPanel.add(new HTML("I"));
+		mainPanel.add(additionalInfoPanel);
 
 		mainPanel.setStyleName("openSoarFA-mainPanel");
 		setContentPanel(mainPanel);
 	}
 
-	public void onClick(Widget sender) {
-		if (sender == load) {
-			JsonClient.getJsonp("http://localhost:9999/NetCoupe2008_5138.igc?", this);
-			//JsonClient.getJsonp("http://localhost:9999/NetCoupe2008_13437.igc?", this);
-		} else if(sender == animStart) {
-			start();
-		} else if(sender == animStop) {
-			stop();
-		} else if(sender == optimize) {
-			optimize();
-		}
-	}
-
-	public void onJsonpResponse(String url, JavaScriptObject jsonResponse) {
-		JSONObject resp = new JSONObject(jsonResponse);
-		
-		flight = new Flight(resp.get("data").isString().stringValue());
-		FlightAnalyzer flightAnalyzer = new FlightAnalyzer(flight);
-		flightAnalyzer.validate();
-		flightAnalyzer.analyze();
-		flightMap.setFlight(flight);
-		flightMap.reset();
-		
-		redraw();
-	}
-	
-	private VerticalPanel getDisplayControlPanel() {
-		VerticalPanel displayControl = new VerticalPanel();
-
-		FlowPanel loadControls = new FlowPanel();
-		loadControls.setStyleName("openSoarFA-controlsPanel");
-		load.addClickListener(this);
-		loadControls.add(load);
-		displayControl.add(loadControls);
-		
-		Grid flightDetails = new Grid();
-		flightDetails.setStyleName("openSoarFA-controlsPanel");
-		flightDetails.resize(4, 2);
-		Label dateTitle = new Label("Flight Date");
-		dateTitle.setStyleName("openSoarFA-title");
-		flightDetails.setWidget(0, 0, dateTitle);
-		flightDetails.setWidget(0, 1, flightDate);
-		Label pilotInChargeTitle = new Label("Pilot Name");
-		pilotInChargeTitle.setStyleName("openSoarFA-title");
-		flightDetails.setWidget(1, 0, pilotInChargeTitle);
-		flightDetails.setWidget(1, 1, pilotInCharge);
-		Label gliderTypeTitle = new Label("Glider Type");
-		gliderTypeTitle.setStyleName("openSoarFA-title");
-		flightDetails.setWidget(2, 0, gliderTypeTitle);
-		flightDetails.setWidget(2, 1, gliderType);
-		Label gliderIdTitle = new Label("Registration");
-		gliderIdTitle.setStyleName("openSoarFA-title");
-		flightDetails.setWidget(3, 0, gliderIdTitle);
-		flightDetails.setWidget(3, 1, gliderId);
-		displayControl.add(flightDetails);
-		
-		FlowPanel animControls = new FlowPanel();
-		animControls.setStyleName("openSoarFA-controlsPanel");
-		animStart.addClickListener(this);
-		animControls.add(animStart);
-		animStop.addClickListener(this);
-		animControls.add(animStop);
-		optimize.addClickListener(this);
-		animControls.add(optimize);
-		displayControl.add(animControls);
-		
-		Grid animDetails = new Grid();
-		animDetails.resize(4, 2);
-		Label animTime = new Label("Time");
-		animTime.setStyleName("openSoarFA-title");
-		animDetails.setWidget(0, 0, animTime);
-		animDetails.setWidget(0, 1, animPositionTime);
-		
-		displayControl.add(animDetails);
-		displayControl.setStyleName("openSoarFA-displayControlPanel");
-		return displayControl;
-	}
-	
-	public void redraw() {
-		if (flight != null) {
-			flightDate.setText(DateTimeFormat.getFullDateFormat().format(flight.getFlightProps().getFlightDate()));
-			pilotInCharge.setText(flight.getFlightProps().getPilotInCharge());
-			gliderType.setText(flight.getFlightProps().getGliderType());
-			gliderId.setText(flight.getFlightProps().getGliderId());
-		}
-	}
-
 	private class AnimationTimer extends Timer {
 		public void run() {
 			if (animPosition < flight.getFlightFixes().size()) {
-				flightMap.moveTo(animPosition);
-				animPositionTime.setText(DateTimeFormat.getMediumTimeFormat().format(flight.getFlightFixes().get(animPosition).getTime()));
+				//flightMap.moveTo(animPosition);
+				//animPositionTime.setText(DateTimeFormat.getMediumTimeFormat().format(flight.getFlightFixes().get(animPosition).getTime()));
 				++animPosition;
 			} else {
 				stop();
@@ -207,9 +100,13 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 		}
 	}
 
+	public Flight getFlight() {
+		return flight;
+	}
+	
 	public void start() {
 		animPosition = 0;
-		flightMap.setZoomLevel(12);
+		//flightMap.setZoomLevel(12);
 		animTimer.scheduleRepeating(200);
 	}
 	
@@ -217,8 +114,16 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 		animTimer.cancel();
 	}
 	
+	public void onJsonpResponse(String url, JavaScriptObject jsonResponse) {
+		JSONObject resp = new JSONObject(jsonResponse);
+		flight = new Flight(resp.get("data").isString().stringValue());
+		FlightAnalyzer flightAnalyzer = new FlightAnalyzer(flight);
+		flightAnalyzer.validate();
+		visualPanel.setFlight(flight);
+	}
+	
 	public void optimize() {
-		Fix[] optimizedFixes = new FAI3TPOptimizer().optimize(flight);
+		Fix[] optimizedFixes = new FAI3TPOptimizer(flight).optimize();
 		ArrayList<LatLng> legPoints = new ArrayList<LatLng>();
 		for (Fix fix: optimizedFixes) {
 			legPoints.add(LatLng.newInstance(fix.getLatitude(), fix.getLongitude()));
@@ -226,6 +131,10 @@ public class FlightAnalysisApp extends OpenSoarApp implements ClickListener, Jso
 		Polyline optimizedPath = new Polyline(legPoints.toArray(new LatLng[] {}));
 		PolyStyleOptions optimizedStyle = PolyStyleOptions.newInstance("#000000", 2, 0.8);
 		optimizedPath.setStrokeStyle(optimizedStyle);
-		flightMap.mapWidget.addOverlay(optimizedPath);
+		//flightMap.mapWidget.addOverlay(optimizedPath);
+	}
+
+	public void setFlight(String url) {
+		JsonClient.getJsonp(url, this);
 	}
 }
