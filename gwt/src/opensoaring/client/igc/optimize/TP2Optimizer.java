@@ -29,11 +29,11 @@ import opensoaring.client.igc.flight.TaskLeg;
 
 import com.google.gwt.core.client.GWT;
 
-public class TP3Optimizer extends BaseOptimizer {
+public class TP2Optimizer extends BaseOptimizer {
 
 	private static String description = "2 Turn Point";
 	
-	public TP3Optimizer(Flight flight) {
+	public TP2Optimizer(Flight flight) {
 		super(flight);
 	}
 	
@@ -46,33 +46,27 @@ public class TP3Optimizer extends BaseOptimizer {
 		ArrayList<Fix> fixes = flight.getFlightFixes();
 		maxDelta = maxDelta();
 		
-		Task task = new Task(4);
+		Task task = new Task(3);
 		
 		double totalDistance = 0.0;
 		double bound = 0.0;
-		for (int tp1=1; tp1<fixes.size()-3; ) {
+		for (int tp1=1; tp1<fixes.size()-2; ) {
 			TaskLeg firstLeg = furthestFrom(tp1, 0, tp1, 0.0);
-			for (int tp2=tp1+1; tp2<fixes.size()-2; ) {
+			for (int tp2=tp1+1; tp2<fixes.size()-1; ) {
 				TaskLeg secondLeg = new TaskLeg(tp1, tp2, 
 						LogUtil.distance(fixes.get(tp1), fixes.get(tp2)));
-				for (int tp3=tp2+1; tp3<fixes.size()-1; ) {
-					TaskLeg thirdLeg = new TaskLeg(tp2, tp3, 
-							LogUtil.distance(fixes.get(tp2), fixes.get(tp3)));
-					TaskLeg fourthLeg = furthestFrom(tp3, tp3+1, fixes.size()-1, 0.0);
-					totalDistance = firstLeg.getDistance() + secondLeg.getDistance()
-						+ thirdLeg.getDistance() + fourthLeg.getDistance();
-					if (totalDistance > bound) {
-						bound = totalDistance;
-						task.setTaskLeg(0, firstLeg);
-						task.setTaskLeg(1, secondLeg);
-						task.setTaskLeg(2, thirdLeg);
-						task.setTaskLeg(3, fourthLeg);
-						++tp3;
-					} else {
-						tp3 = forward(tp3, bound-totalDistance);
-					}
+				TaskLeg thirdLeg = furthestFrom(tp2, tp2+1, fixes.size()-1, 0.0);
+				totalDistance = firstLeg.getDistance() + secondLeg.getDistance()
+					+ thirdLeg.getDistance();
+				if (totalDistance > bound) {
+					bound = totalDistance;
+					task.setTaskLeg(0, firstLeg);
+					task.setTaskLeg(1, secondLeg);
+					task.setTaskLeg(2, thirdLeg);
+					++tp2;
+				} else {
+					tp2 = forward(tp2, 0.5 * (bound-totalDistance));
 				}
-				++tp2;
 			}
 			++tp1;
 		}

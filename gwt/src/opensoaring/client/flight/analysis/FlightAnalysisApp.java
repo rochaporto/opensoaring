@@ -27,17 +27,14 @@ import opensoaring.client.igc.analyze.FlightAnalyzer;
 import opensoaring.client.igc.flight.Fix;
 import opensoaring.client.igc.flight.Flight;
 import opensoaring.client.igc.flight.Task;
-import opensoaring.client.igc.flight.TaskLeg;
 import opensoaring.client.igc.optimize.TP1Optimizer;
+import opensoaring.client.igc.optimize.TP3Optimizer;
 import opensoaring.client.json.JsonClient;
 import opensoaring.client.json.JsonpListener;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.maps.client.geom.LatLng;
-import com.google.gwt.maps.client.overlay.PolyStyleOptions;
-import com.google.gwt.maps.client.overlay.Polyline;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -117,11 +114,15 @@ public class FlightAnalysisApp extends OpenSoarApp implements JsonpListener {
 	
 	public void optimize() {
 		ArrayList<Fix> fixes = flight.getFlightFixes();
-		Task task = new TP1Optimizer(flight).optimize();
+		Task task1 = new TP1Optimizer(flight).optimize();
+		//Task task2 = new TP2Optimizer(flight).optimize();
+		Task task3 = new TP3Optimizer(flight).optimize();
 		
 
-		GWT.log("tp1 optimizer :: " + task.getDistance(), null);
-		visualPanel.setTask(task);
+		GWT.log("tp1 optimizer :: " + task1.getDistance(), null);
+		//GWT.log("tp2 optimizer :: " + task2.getDistance(), null);
+		GWT.log("tp3 optimizer :: " + task3.getDistance(), null);
+		visualPanel.setTask(task3);
 	}
 
 	public void setFlight(String url) {
