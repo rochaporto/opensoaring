@@ -30,7 +30,7 @@ import opensoaring.client.igc.flight.TaskLeg;
 
 public class TP1Optimizer extends BaseOptimizer {
 
-	private static String description = "FAI 3 Turn Point";
+	private static String description = "1 Turn Point";
 	
 	public TP1Optimizer(Flight flight) {
 		super(flight);

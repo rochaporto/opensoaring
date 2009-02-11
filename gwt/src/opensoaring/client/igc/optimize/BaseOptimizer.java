@@ -38,14 +38,11 @@ public abstract class BaseOptimizer implements FlightOptimizer {
 		
 		for (int i=startPoint; i<endPoint; i++) {
 			double distance = LogUtil.distance(fixes.get(point), fixes.get(i));
-			//GWT.log("i=" + i + " :: dist=" + distance, null);
 			if (distance > maxDistance) {
-				//GWT.log("updated dist=" + maxDistance, null);
 				maxDistance = distance;
 				furthestPoint = i;
 			} else {
 				int step = forward(i, maxDistance - distance);
-				//GWT.log("forward step=" + step, null);
 				i = step;
 			}
 		}
