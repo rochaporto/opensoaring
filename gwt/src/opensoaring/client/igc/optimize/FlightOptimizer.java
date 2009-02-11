@@ -25,12 +25,11 @@ package opensoaring.client.igc.optimize;
  * 
  * http://freenet-homepage.de/streckenflug/optigc.html
  */
-import opensoaring.client.igc.flight.Fix;
-import opensoaring.client.igc.flight.Flight;
+import opensoaring.client.igc.flight.Task;
 
 public interface FlightOptimizer {
 
-	public Fix[] optimize();
+	public Task optimize();
 	
 	public String getDescription();
 	

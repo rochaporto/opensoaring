@@ -23,32 +23,25 @@ package opensoaring.client.flight.analysis;
 import java.util.ArrayList;
 
 import opensoaring.client.OpenSoarApp;
-import opensoaring.client.igc.LogUtil;
 import opensoaring.client.igc.analyze.FlightAnalyzer;
 import opensoaring.client.igc.flight.Fix;
 import opensoaring.client.igc.flight.Flight;
-import opensoaring.client.igc.optimize.FAI3TPOptimizer;
+import opensoaring.client.igc.flight.Task;
+import opensoaring.client.igc.flight.TaskLeg;
+import opensoaring.client.igc.optimize.TP1Optimizer;
 import opensoaring.client.json.JsonClient;
 import opensoaring.client.json.JsonpListener;
-import opensoaring.client.map.FlightMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.maps.client.geom.LatLng;
 import com.google.gwt.maps.client.overlay.PolyStyleOptions;
 import com.google.gwt.maps.client.overlay.Polyline;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class FlightAnalysisApp extends OpenSoarApp implements JsonpListener {
 	
@@ -123,15 +116,12 @@ public class FlightAnalysisApp extends OpenSoarApp implements JsonpListener {
 	}
 	
 	public void optimize() {
-		Fix[] optimizedFixes = new FAI3TPOptimizer(flight).optimize();
-		ArrayList<LatLng> legPoints = new ArrayList<LatLng>();
-		for (Fix fix: optimizedFixes) {
-			legPoints.add(LatLng.newInstance(fix.getLatitude(), fix.getLongitude()));
-		}
-		Polyline optimizedPath = new Polyline(legPoints.toArray(new LatLng[] {}));
-		PolyStyleOptions optimizedStyle = PolyStyleOptions.newInstance("#000000", 2, 0.8);
-		optimizedPath.setStrokeStyle(optimizedStyle);
-		//flightMap.mapWidget.addOverlay(optimizedPath);
+		ArrayList<Fix> fixes = flight.getFlightFixes();
+		Task task = new TP1Optimizer(flight).optimize();
+		
+
+		GWT.log("tp1 optimizer :: " + task.getDistance(), null);
+		visualPanel.setTask(task);
 	}
 
 	public void setFlight(String url) {

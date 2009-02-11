@@ -21,13 +21,14 @@ package opensoaring.client.igc.optimize;
 
 import java.util.ArrayList;
 
-import com.google.gwt.core.client.GWT;
-
 import opensoaring.client.igc.LogUtil;
 import opensoaring.client.igc.flight.Fix;
 import opensoaring.client.igc.flight.Flight;
+import opensoaring.client.igc.flight.Task;
 
-public class FAI3TPOptimizer implements FlightOptimizer {
+import com.google.gwt.core.client.GWT;
+
+public class TP3Optimizer implements FlightOptimizer {
 
 	private static String description = "FAI 3 Turn Point";
 	
@@ -35,7 +36,7 @@ public class FAI3TPOptimizer implements FlightOptimizer {
 	
 	private double maxDelta;
 	
-	public FAI3TPOptimizer(Flight flight) {
+	public TP3Optimizer(Flight flight) {
 		this.flight = flight;
 	}
 	
@@ -53,7 +54,8 @@ public class FAI3TPOptimizer implements FlightOptimizer {
 	}
 	
 	private int forward(int startFrom, double distance) {
-		return (int)(distance / maxDelta) + startFrom;
+		int step = (int)(distance / maxDelta);
+		return step > 0 ? startFrom + step: ++startFrom;
 	}
 	
 	private double furthestFrom(int point, int startPoint, int endPoint, double minDistance) {
@@ -93,14 +95,37 @@ public class FAI3TPOptimizer implements FlightOptimizer {
 		return distance;
 	}
 	
-	public Fix[] optimize() {
+	private double openDistance1() {
+		ArrayList<Fix> fixes = flight.getFlightFixes();
+		
+		int[] turnPoints = new int[3];
+		double total = 0.0;
+		double bound = 0.0;
+		for (int tp1=1; tp1<fixes.size()-1; ) {
+			double before = furthestFrom(tp1, 0, tp1, 0.0);
+			double after = furthestFrom(tp1, tp1+1, fixes.size()-1, 0.0);
+			total = before + after;
+			//GWT.log("before :: " + before + " :: after :: " + after, null);
+			if (total > bound) {
+				bound = total;
+				++tp1;
+			} else {
+				//GWT.log("tp1 would be (" + forward(tp1, bound - total) + ", " + (bound - total), null);
+				tp1 = forward(tp1, bound-total);
+			}
+		}
+		return bound;
+	}
+	
+	public Task optimize() {
 		ArrayList<Fix> fixes = flight.getFlightFixes();
 		maxDelta = maxDelta();
 		
 		GWT.log("max delta :: " + maxDelta, null);
 		GWT.log("max dist from takeoff :: " + maxDistanceFromTakeoff(), null);
 		GWT.log("open distance :: " + openDistance(), null);
-		return new Fix[] {};
+		GWT.log("open distance 1 :: " + openDistance1(), null);
+		return new Task(4);
 	}
 	
 
