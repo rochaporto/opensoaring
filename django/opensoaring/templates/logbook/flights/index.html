@@ -1,0 +1,9 @@
+{% if flight_list %}
+    <ul>
+    {% for flight in flight_list %}
+        <li>{{ flight.takeoff_date }} :: {{ flight.plane.registration }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No flights.</p>
+{% endif %}
