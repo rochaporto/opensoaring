@@ -7,9 +7,9 @@ import sys
 from optparse import OptionParser
 from string import ascii_uppercase
 
-VAC_ALL_FILE = "vac_all.pdf"
+VAC_ALL_FILE = "vac_all"
 BASE_URL = "https://www.sia.aviation-civile.gouv.fr/aip/enligne/PDF_AIPparSSection/VAC/AD/2/1002_AD-2.%s.pdf"
-DW_ICAO_LIST = ["LFAB", "LFAC"]
+DW_ICAO_LIST = ["LFLI", "LFKA", "LFLP", "LFHS", "LFHN", "LFLB", "LFLS", "LFLG", "LFLY", "LFHI", "LFHZ"]
 
 usage = "usage: %prog [options] directory"
 description = """
@@ -20,10 +20,13 @@ Downloads all french VAC charts into the given directory.
 parser = OptionParser(usage=usage, description=description, version="0.1a")
 parser.add_option("-a", "--all", action="store_true", dest="all")
 parser.add_option("-m", "--merge", action="store_true", dest="merge")
+parser.add_option("-b", "--merge-better", action="store_true", dest="merge_better")
+parser.add_option("-5", "--a5", action="store_true", dest="a5")
 parser.add_option("-v", "--verbose", action="store_true", dest="verbose")
 parser.add_option("-q", "--quiet", action="store_true", dest="quiet")
 
 def main():
+    """ Runs the show. """
     (options, args) = parser.parse_args()
     if not len(args) == 1:
         parser.print_help()
@@ -46,10 +49,11 @@ def main():
         fetch_vac(icao_code, directory, options)
 
     # Merge into a single pdf file if requested
-    if options.merge:
+    if options.merge or options.merge_better:
         merge_vac(icao_code_list, directory, options)
         
 def fetch_vac(icao_code, directory, options):
+    """ Download the VAC chart corresponding to icao_code to directory. """
     vac_url = BASE_URL % icao_code
     try:
         resp = urllib2.urlopen(vac_url)
@@ -75,16 +79,31 @@ def fetch_vac(icao_code, directory, options):
         sys.stdout.flush()
 
 def merge_vac(icao_code_list, directory, options):
-    info("Merging all VAC charts into one pdf file...", options)
-    cmd = "gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=%s %s" \
-          % ("%s/%s" % (directory, VAC_ALL_FILE), 
-             " ".join(map(lambda c: "%s/%s.pdf" % (directory, c), icao_code_list)))
-    info(cmd, options, True)
-    (code, output) = commands.getstatusoutput(cmd)
-    if code != 0:
-        fail("Failed to generate all VAC charts pdf file...\n%s" % output)
+    """ Merges pages corresponding to icao_code_list in directory to a single pdf file. """
+    vac_all_file = "%s/%s.pdf" % (directory, VAC_ALL_FILE)
+    vac_a5_file = "%s/%s.a5.pdf" % (directory, VAC_ALL_FILE)
+    start_page = 1 if options.merge_better else 0
+    info("Merging all VAC charts into one pdf file (%s)..." % vac_all_file, options)
+    from pyPdf import PdfFileWriter, PdfFileReader
+    out_pdf = PdfFileWriter()
+    for icao_code in icao_code_list:
+        in_file = open("%s/%s.pdf" % (directory, icao_code), "rb")
+        in_pdf = PdfFileReader(in_file)
+        in_pdf.decrypt("")
+        for i in range(start_page, in_pdf.numPages):
+            out_pdf.addPage(in_pdf.getPage(i))
+    out_file = open("%s/%s.pdf" % (directory, VAC_ALL_FILE), "wb")
+    out_pdf.write(out_file)
+    out_file.close()
+    if options.a5:
+        info("Converting merged file to 2x1 A5 in A4 format (%s)..." % vac_a5_file, options)
+        (status, output) = commands.getstatusoutput("pdfnup %s/%s.pdf --outfile %s/%s.a5.pdf" 
+                                                    % (directory, VAC_ALL_FILE, directory, VAC_ALL_FILE))
+        if status != 0:
+            fail("Failed to convert merged file to 2x1 A5 in A4 format.\n%s" % output)
 
 def check_dir(directory, options):
+    """ Checks if directory exists, if yes recreates it. """
     if os.path.isdir(directory):
         overwrite_ok = raw_input("Will delete/recreate directory '%s'... continue? [Y/N] " % directory).upper()
         while overwrite_ok not in ["Y", "N"]:
@@ -95,10 +114,12 @@ def check_dir(directory, options):
     os.makedirs(directory)
 
 def info(msg, options, verbose=False):
+    """ Prints some info to the user, taking verbosity into account. """
     if (not verbose and not options.quiet) or (verbose and options.verbose):
         print "INFO: %s" % msg
 
 def fail(msg):
+    """ Prints error info into stdree, and exits. """
     print >> sys.stderr, "ERROR: %s" % msg
     sys.exit(2)
 
