@@ -29,16 +29,11 @@ def main():
         parser.print_help()
         sys.exit(2)
     
+    # Check / scratch the destination directory
     directory = args[0]
-    if os.path.isdir(directory):
-        overwrite_ok = raw_input("Will delete/recreate directory '%s'... continue? [Y/N] " % directory).upper()
-        while overwrite_ok not in ["Y", "N"]:
-            overwrite_ok = raw_input("Will delete/recreate directory '%s'... continue? [Y/N] " % directory).upper()
-        if not overwrite_ok == "Y":
-            fail("Canceled by user")
-    shutil.rmtree(directory)
-    os.makedirs(directory)
+    check_dir(directory, options)
 
+    # Use the default ICAO list unless --all is given
     icao_code_list = DW_ICAO_LIST
     info("Fetching VAC charts", options)
     if options.all:
@@ -46,41 +41,59 @@ def main():
         for c1 in ascii_uppercase:
             for c2 in ascii_uppercase:
                 icao_code_list.append("LF%s%s" % (c1, c2))
+
     for icao_code in icao_code_list:
-        vac_url = BASE_URL % icao_code
-        try:
-            resp = urllib2.urlopen(vac_url)
-            vac_file = "%s/%s.pdf" % (directory, icao_code)
-            vac_fileh = open(vac_file, "w")
-            vac_fileh.write(resp.read())
-            resp.close()
-            vac_fileh.close()
-        except urllib2.HTTPError, exc:
-            if exc.code == 404:
-                continue
-            fail("Could not retrieve data: %s" % vac_url)
-        except urllib2.URLError, exc:
-            fail("Could not retrieve data: %s" % vac_url)
-        except IOError, exc:
-            fail("Failed to write to file: %s" % vac_file)
+        fetch_vac(icao_code, directory, options)
 
-        if options.verbose:
-            info("Fetched VAC chart for %s" % icao_code, options, True)
-            info("( %s )" % vac_url, options, True)
-        elif not options.quiet:
-            sys.stdout.write(".")
-            sys.stdout.flush()
-    info("Done.", options)
-
+    # Merge into a single pdf file if requested
     if options.merge:
-        info("Merging all VAC charts into one pdf file...", options)
-        cmd = "gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=%s %s" \
-              % ("%s/%s" % (directory, VAC_ALL_FILE), " ".join(map(lambda c: "%s/%s.pdf" % (directory, c), icao_code_list)))
-        info(cmd, options, True)
-        (code, output) = commands.getstatusoutput(cmd)
-        if code != 0:
-            fail("Failed to generate all VAC charts pdf file...\n%s" % output)
+        merge_vac(icao_code_list, directory, options)
         
+def fetch_vac(icao_code, directory, options):
+    vac_url = BASE_URL % icao_code
+    try:
+        resp = urllib2.urlopen(vac_url)
+        vac_file = "%s/%s.pdf" % (directory, icao_code)
+        vac_fileh = open(vac_file, "w")
+        vac_fileh.write(resp.read())
+        resp.close()
+        vac_fileh.close()
+    except urllib2.HTTPError, exc:
+        if exc.code == 404:
+            return
+        fail("Could not retrieve data: %s" % vac_url)
+    except urllib2.URLError, exc:
+        fail("Could not retrieve data: %s" % vac_url)
+    except IOError, exc:
+        fail("Failed to write to file: %s" % vac_file)
+
+    if options.verbose:
+        info("Fetched VAC chart for %s" % icao_code, options, True)
+        info("( %s )" % vac_url, options, True)
+    elif not options.quiet:
+        sys.stdout.write(".")
+        sys.stdout.flush()
+
+def merge_vac(icao_code_list, directory, options):
+    info("Merging all VAC charts into one pdf file...", options)
+    cmd = "gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=%s %s" \
+          % ("%s/%s" % (directory, VAC_ALL_FILE), 
+             " ".join(map(lambda c: "%s/%s.pdf" % (directory, c), icao_code_list)))
+    info(cmd, options, True)
+    (code, output) = commands.getstatusoutput(cmd)
+    if code != 0:
+        fail("Failed to generate all VAC charts pdf file...\n%s" % output)
+
+def check_dir(directory, options):
+    if os.path.isdir(directory):
+        overwrite_ok = raw_input("Will delete/recreate directory '%s'... continue? [Y/N] " % directory).upper()
+        while overwrite_ok not in ["Y", "N"]:
+            overwrite_ok = raw_input("Will delete/recreate directory '%s'... continue? [Y/N] " % directory).upper()
+        if not overwrite_ok == "Y":
+            fail("Canceled by user")
+        shutil.rmtree(directory)
+    os.makedirs(directory)
+
 def info(msg, options, verbose=False):
     if (not verbose and not options.quiet) or (verbose and options.verbose):
         print "INFO: %s" % msg
