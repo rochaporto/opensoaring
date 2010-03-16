@@ -8,8 +8,8 @@ from optparse import OptionParser
 from string import ascii_uppercase
 
 VAC_ALL_FILE = "vac_all"
-BASE_URL = "https://www.sia.aviation-civile.gouv.fr/aip/enligne/PDF_AIPparSSection/VAC/AD/2/1002_AD-2.%s.pdf"
-DW_ICAO_LIST = ["LFLI", "LFKA", "LFLP", "LFHS", "LFHN", "LFLB", "LFLS", "LFLG", "LFLY", "LFHI", "LFHZ"]
+BASE_URL = "https://www.sia.aviation-civile.gouv.fr/aip/enligne/PDF_AIPparSSection/VAC/AD/2/1004_AD-2.%s.pdf"
+DW_ICAO_LIST = ["LFHE","LFHH","LFHI","LFHJ","LFHM","LFHN","LFHS","LFHU","LFHV","LFHW","LFHZ","LFJD","LFJF","LFKA","LFKE","LFKD","LFKH","LFKL","LFKP","LFKR","LFKX","LFKY","LFLB","LFLE","LFLG","LFLH","LFLI","LFLJ","LFLK","LFLL","LFLM","LFLP","LFLR","LFLS","LFLU","LFLY","LFNC","LFXA"]
 
 usage = "usage: %prog [options] directory"
 description = """
