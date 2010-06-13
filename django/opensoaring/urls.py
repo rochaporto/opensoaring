@@ -4,15 +4,5 @@ from django.conf.urls.defaults import *
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('opensoaring.logbook.views',
-    # Example:
-    (r'^opensoaring/flights/$', 'index'),
-    (r'^opensoaring/flights/(?P<flight_id>\d+)/$', 'detail'),
-
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
-    # to INSTALLED_APPS to enable admin documentation:
-    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-    (r'^admin/', include(admin.site.urls)),
+urlpatterns = patterns('opensoaring.club.views',
 )

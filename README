@@ -1,13 +1,22 @@
-Thanks for your interest in opensoaring software.
+    OpenSoaring Software <http://opensoaring.info>
 
-To get more help:
+This package provides the OpenSoaring set of tools and applications.
 
-    * Visit us at http://opensoaring.info
+WHAT IS OPENSOARING
 
-    * Join the opensoaring-users group, or read the archives, at
-      http://groups.google.com/group/opensoaring-users
+  OpenSoaring software provides a set of open source applications
+  for glider clubs and pilots. These are mostly web based and mobile services
+  for managing pilots and fleets, planning of instructors and machine
+  assignment, flight planning and analysis, etc.
 
-To contribute to opensoaring software development:
+DOCUMENTATION
 
-    * Check out http://opensoaring.info/community for information 
-      about getting involved
+  Full documentation is available both in this package and online
+  at <http://opensoaring.info/documentation>, provided in txt, pdf
+  and html formats.
+
+GETTING HELP
+
+  If you are a user of any of our applications, please join the mailing
+  list opensoaring-user@groups.google.com to get additional help from
+  what is providing in the FAQ and documentation pages.
