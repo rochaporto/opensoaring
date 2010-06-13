@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="Go to Photo Album" height="250" scaling="false" />
+  <Content type="html">
+  <![CDATA[ 
+    Hello World!
+  ]]> 
+  </Content>
+</Module>
