@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="Thermal Forecast" height="250" scaling="true" />
+  <UserPref name="location" default_value="ncy" datatype="hidden"/>
+  <Content type="html">
+  <![CDATA[ 
+    // Javascript for thermal forecast
+    <script type="text/javascript">
+        var prefs = new gadgets.Prefs();
+        var location = prefs.getString("location");
+        document.getElementById("locationDiv").innerHTML = 
+                "http://international.aero.free.fr/meteo/forecast_thermal_" + location + ".html";
+    </script>
+
+    // HTML for thermal forecast
+    <div id="locationDiv">
+      <img src="http://international.aero.free.fr/meteo/forecast_thermal_ncy.html"/>
+    </div>
+  ]]> 
+  </Content>
+</Module>
+
+
+
