@@ -10,6 +10,7 @@
         var location = prefs.getString("location");
         document.getElementById("locationDiv").innerHTML = 
                 "http://international.aero.free.fr/meteo/forecast_thermal_" + location + ".html";
+        alert("a");
     </script>
 
     // HTML for thermal forecast
